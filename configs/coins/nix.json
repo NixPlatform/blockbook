@@ -1,0 +1,70 @@
+{
+  "coin": {
+    "name": "NIX",
+    "shortcut": "NIX",
+    "label": "NIX",
+    "alias": "nix"
+  },
+  "ports": {
+    "backend_rpc": 8056,
+    "backend_message_queue": 38356,
+    "blockbook_internal": 9056,
+    "blockbook_public": 9156
+  },
+  "ipc": {
+    "rpc_url_template": "http://127.0.0.1:{{.Ports.BackendRPC}}",
+    "rpc_user": "rpc",
+    "rpc_pass": "rpc",
+    "rpc_timeout": 25,
+    "message_queue_binding_template": "tcp://127.0.0.1:{{.Ports.BackendMessageQueue}}"
+  },
+  "backend": {
+    "package_name": "backend-nix",
+    "package_revision": "satoshilabs-1",
+    "system_user": "nix",
+    "version": "2.0.3.3",
+    "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v2.3.0.3/nix-2.3.0-x86_64-linux-gnu.tar.gz",
+    "verification_type": "sha256",
+    "verification_source": "76ddf4d10fe123b1df740f7c35255529e7cc370e15b90aa3cc0fff2e4c794a63",
+    "extract_command": "tar -C backend --strip 1 -xf",
+    "exclude_files": [
+        "bin/nix-qt",
+        "bin/nix-tx"
+    ],
+    "exec_command_template": "{{.Env.BackendInstallPath}}/{{.Coin.Alias}}/zcoind -datadir={{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend -conf={{.Env.BackendInstallPath}}/{{.Coin.Alias}}/{{.Coin.Alias}}.conf -pid=/run/{{.Coin.Alias}}/{{.Coin.Alias}}.pid",
+    "logrotate_files_template": "{{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend/*.log",
+    "postinst_script_template": "",
+    "service_type": "forking",
+    "service_additional_params_template": "",
+    "protect_memory": true,
+    "mainnet": true,
+    "server_config_file": "bitcoin_like.conf",
+    "client_config_file": "bitcoin_like_client.conf",
+    "additional_params": {
+      "whitelist": "127.0.0.1"
+    }
+  },
+  "blockbook": {
+    "package_name": "blockbook-nix",
+    "system_user": "blockbook-nix",
+    "internal_binding_template": ":{{.Ports.BlockbookInternal}}",
+    "public_binding_template": ":{{.Ports.BlockbookPublic}}",
+    "explorer_url": "",
+    "additional_params": "",
+    "block_chain": {
+      "parse": true,
+      "mempool_workers": 8,
+      "mempool_sub_workers": 2,
+      "block_addresses_to_keep": 1000,
+      "xpub_magic": 76067358,
+      "xpub_magic_segwit_p2sh": 77429938,
+      "xpub_magic_segwit_native": 78792518,
+      "slip44": 400,
+      "additional_params": {}
+    }
+  },
+  "meta": {
+    "package_maintainer": "mattt21",
+    "package_maintainer_email": "matt@nixplatform.io"
+  }
+}
