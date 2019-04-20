@@ -1,16 +1,16 @@
 package nix
 
 import (
-   "bytes"
-   "encoding/binary"
-   "io"
-   "time"
-   "math"
+	"bytes"
+	"encoding/binary"
+	"io"
+	"math"
+	"time"
 
-   "github.com/btcsuite/btcd/chaincfg/chainhash"
-   "github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/wire"
 
-   "fmt"
+	"fmt"
 )
 
 const (

@@ -1,8 +1,8 @@
 package nix
 
 import (
-   "blockbook/bchain/coins/btc"
    "blockbook/bchain"
+   "blockbook/bchain/coins/btc"
    "bytes"
    "encoding/binary"
    "encoding/hex"
