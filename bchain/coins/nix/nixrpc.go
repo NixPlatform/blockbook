@@ -78,10 +78,10 @@ func (g *NixRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
    for _, txid := range bi.Txids {
       tx, err := g.GetTransaction(txid)
       if err != nil {
-         if isInvalidTx(err) {
-            glog.Errorf("rpc: getblock: skipping transanction in block %s due error: %s", hash, err)
-            continue
-         }
+		  if err == bchain.ErrTxNotFound {
+			  glog.Errorf("rpc: getblock: skipping transanction in block %s due error: %s", hash, err)
+			  continue
+		  }
          return nil, err
       }
       txs = append(txs, *tx)
@@ -114,31 +114,36 @@ func (g *NixRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
 
 // GetTransactionForMempool returns a transaction by the transaction ID.
 // It could be optimized for mempool, i.e. without block time and confirmations
-func (p *NixRPC) GetTransactionForMempool(txid string) (*bchain.Tx, error) {
-   return p.GetTransaction(txid)
+//func (p *NixRPC) GetTransactionForMempool(txid string) (*bchain.Tx, error) {
+//   return p.GetTransaction(txid)
+//}
+// GetTransactionForMempool returns a transaction by the transaction ID.
+// It could be optimized for mempool, i.e. without block time and confirmations
+func (b *NixRPC) GetTransactionForMempool(txid string) (*bchain.Tx, error) {
+	return b.GetTransaction(txid)
 }
 
-// GetTransaction returns a transaction by the transaction ID.
-func (p *NixRPC) GetTransaction(txid string) (*bchain.Tx, error) {
-   if txid == ZERO_INPUT {
-      return nil, bchain.ErrTxidMissing
-   }
-	r, err := p.GetTransactionSpecific(txid)
-	if err != nil {
-		return nil, err
-	}
-	tx, err := p.Parser.ParseTxFromJson(r)
-	if err != nil {
-		return nil, errors.Annotatef(err, "txid %v", txid)
-	}
-	return tx, nil
-}
-
-// GetMempoolEntry returns mempool data for given transaction
-func (p *NixRPC) GetMempoolEntry(txid string) (*bchain.MempoolEntry, error) {
-   return nil, errors.New("GetMempoolEntry: not implemented")
-}
-
-func isErrBlockNotFound(err *bchain.RPCError) bool {
-   return err.Message == "Block not found" || err.Message == "Block height out of range"
-}
+//// GetTransaction returns a transaction by the transaction ID.
+//func (p *NixRPC) GetTransaction(txid string) (*bchain.Tx, error) {
+//   if txid == ZERO_INPUT {
+//      return nil, bchain.ErrTxidMissing
+//   }
+//	r, err := p.GetTransactionSpecific(txid)
+//	if err != nil {
+//		return nil, err
+//	}
+//	tx, err := p.Parser.ParseTxFromJson(r)
+//	if err != nil {
+//		return nil, errors.Annotatef(err, "txid %v", txid)
+//	}
+//	return tx, nil
+//}
+//
+//// GetMempoolEntry returns mempool data for given transaction
+//func (p *NixRPC) GetMempoolEntry(txid string) (*bchain.MempoolEntry, error) {
+//   return nil, errors.New("GetMempoolEntry: not implemented")
+//}
+//
+//func isErrBlockNotFound(err *bchain.RPCError) bool {
+//   return err.Message == "Block not found" || err.Message == "Block height out of range"
+//}
