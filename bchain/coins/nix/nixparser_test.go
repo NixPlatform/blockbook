@@ -3,15 +3,15 @@
 package nix
 
 import (
-	"blockbook/bchain"
+	//"blockbook/bchain"
 	"blockbook/bchain/coins/btc"
 	"bytes"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
-	"math/big"
+	//"math/big"
 	"path/filepath"
-	"reflect"
+	//"reflect"
 	"testing"
 )
 
@@ -73,7 +73,7 @@ func helperLoadBlock(t *testing.T, height int) []byte {
 }
 
 func TestParseBlock(t *testing.T) {
-	p := NewDashParser(GetChainParams("main"), &btc.Configuration{})
+	p := newNixParser(GetChainParams("main"), &btc.Configuration{})
 
 	for height, tb := range testParseBlockTxs {
 		b := helperLoadBlock(t, height)
