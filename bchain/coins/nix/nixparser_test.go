@@ -4,7 +4,7 @@ package nix
 
 import (
 	//"blockbook/bchain"
-	"blockbook/bchain/coins/btc"
+	//"blockbook/bchain/coins/btc"
 	"bytes"
 	"encoding/hex"
 	"fmt"
