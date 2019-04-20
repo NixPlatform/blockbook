@@ -4,6 +4,7 @@ import (
 	"blockbook/bchain"
 	"blockbook/bchain/coins/btc"
 	"encoding/json"
+	"errors"
 
 	"github.com/golang/glog"
 )
@@ -40,7 +41,7 @@ func (b *NixRPC) Initialize() error {
 	params := GetChainParams(chainName)
 
 	// always create parser
-	b.Parser = NewNIXParser(params, b.ChainConfig)
+	b.Parser = NewNixParser(params, b.ChainConfig)
 
 	// parameters for getInfo request
 	if params.Net == MainnetMagic {

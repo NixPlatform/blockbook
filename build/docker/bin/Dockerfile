@@ -35,13 +35,13 @@ RUN strip /opt/rocksdb/ldb /opt/rocksdb/sst_dump && \
 # install build tools
 RUN go get github.com/golang/dep/cmd/dep
 RUN go get github.com/gobuffalo/packr/...
-RUN go get github.com/bsm/go-vlq
-RUN go get github.com/btcsuite/btcd/blockchain
-RUN go get github.com/btcsuite/btcd/chaincfg/chainhash
-RUN go get github.com/btcsuite/btcd/wire
-RUN go get github.com/jakm/btcutil
-RUN go get github.com/jakm/btcutil/chaincfg
-RUN go get github.com/jakm/btcutil/txscript
+#RUN go get github.com/bsm/go-vlq
+#RUN go get github.com/btcsuite/btcd/blockchain
+#RUN go get github.com/btcsuite/btcd/chaincfg/chainhash
+#RUN go get github.com/btcsuite/btcd/wire
+#RUN go get github.com/jakm/btcutil
+#RUN go get github.com/jakm/btcutil/chaincfg
+#RUN go get github.com/jakm/btcutil/txscript
 
 # download pre-loaded depencencies
 RUN \
