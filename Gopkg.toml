@@ -75,24 +75,8 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/btcsuite/btcd/blockchain"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/btcsuite/btcd/chaincfg/chainhash"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/btcsuite/btcd/wire"
+  name = "github.com/btcsuite/btcd"
 
 [[constraint]]
   branch = "master"
   name = "github.com/jakm/btcutil"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/jakm/btcutil/chaincfg"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/jakm/btcutil/txscript"
