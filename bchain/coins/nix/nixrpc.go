@@ -88,29 +88,29 @@ func (g *NixRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
    }
 
    // block is PoS when nonce is zero
-   blocktype := 1
+   //blocktype := 1
 
    block := &bchain.Block{
       BlockHeader: bi.BlockHeader,
       Txs:         txs,
-      Type:        blocktype,
+      //Type:        blocktype,
    }
    return block, nil
 }
 
-func isInvalidTx(err error) bool {
-   switch e1 := err.(type) {
-   case *errors.Err:
-      switch e2 := e1.Cause().(type) {
-      case *bchain.RPCError:
-         if e2.Code == -5 { // "No information available about transaction"
-            return true
-         }
-      }
-   }
-
-   return false
-}
+//func isInvalidTx(err error) bool {
+//   switch e1 := err.(type) {
+//   case *errors.Err:
+//      switch e2 := e1.Cause().(type) {
+//      case *bchain.RPCError:
+//         if e2.Code == -5 { // "No information available about transaction"
+//            return true
+//         }
+//      }
+//   }
+//
+//   return false
+//}
 
 // GetTransactionForMempool returns a transaction by the transaction ID.
 // It could be optimized for mempool, i.e. without block time and confirmations
