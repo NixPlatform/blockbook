@@ -57,9 +57,7 @@ type NixParser struct {
 
 // NewNixParser returns new NixParser instance
 func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
-   p := &NixParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
-   p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
-      return p
+   return &NixParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
 }
 
 // GetChainParams contains network parameters for the main and test Nix network
