@@ -243,7 +243,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<h1>Application status</h1>`,
 				`<h3 class="bg-warning text-white" style="padding: 20px;">Synchronization with backend is disabled, the state of index is not up to date.</h3>`,
 				`<a href="/block/225494">225494</a>`,
 				`<td class="data">/Fakecoin:0.0.1/</td>`,
