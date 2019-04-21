@@ -8,9 +8,9 @@ import (
 )
 
 const (
-   MainnetMagic wire.BitcoinNet = 0xa3d0cfb6
-   TestnetMagic wire.BitcoinNet = 0xa3d0cfb6 // "vert" word
-   RegtestMagic wire.BitcoinNet = 0xdab5bffc
+   MainnetMagic wire.BitcoinNet = 0xb9b4bef9
+   TestnetMagic wire.BitcoinNet = 0x09070b11
+   RegtestMagic wire.BitcoinNet = 0xfabfb5da
 
    // Dummy TxId for zerocoin
    ZERO_INPUT = "0000000000000000000000000000000000000000000000000000000000000000"
