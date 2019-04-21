@@ -1,5 +1,10 @@
 {{define "specific"}}{{$cs := .CoinShortcut}}{{$bb := .Info.Blockbook}}{{$be := .Info.Backend}}
-<h1>Application status</h1>
+<h1>NIX Explorer</h1>
+<span class="d-none ml-md-auto d-md-flex navbar-form navbar-left">
+    <form id="search" action="/search" method="get">
+        <input name="q" type="text" class="form-control" placeholder="Search for block, transaction, address or xpub" focus="true">
+    </form>
+</span>
 {{- if $bb.InitialSync -}}
 <h3 class="bg-danger text-white" style="padding: 20px;">Application is now in initial synchronization and does not provide any data.</h3>
 {{- end -}}
@@ -8,7 +13,7 @@
 {{- end -}}
 <div class="row">
     <div class="col-md-6">
-        <h3>Blockbook</h3>
+        <h3>Daemon</h3>
         <table class="table data-table">
             <tbody>
                 <tr>
@@ -20,8 +25,8 @@
                     <td class="data">{{$bb.Host}}</td>
                 </tr>
                 <tr>
-                    <td>Version / Commit / Build</td>
-                    <td class="data">{{$bb.Version}} / <a href="https://github.com/NixPlatform/blockbook/commit/{{$bb.GitCommit}}" target="_blank" rel="noopener noreferrer">{{$bb.GitCommit}}</a> / {{$bb.BuildTime}}</td>
+                    <td>Version</td>
+                    <td class="data">{{$bb.Version}}</td>
                 </tr>
                 <tr>
                     <td>Synchronized</td>
@@ -104,5 +109,4 @@
         </table>
     </div>
 </div>
-<span class="text-muted">{{$bb.About}}</span>
 {{end}}
