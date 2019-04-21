@@ -62,15 +62,15 @@ func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
 
 // GetChainParams contains network parameters for the main and test Nix network
 func GetChainParams(chain string) *chaincfg.Params {
-   if !chaincfg.IsRegistered(&MainNetParams) {
-      err := chaincfg.Register(&MainNetParams)
-      if err == nil {
-         err = chaincfg.Register(&TestNetParams)
-      }
-      if err != nil {
-         panic(err)
-      }
-   }
+   //if !chaincfg.IsRegistered(&MainNetParams) {
+   //   err := chaincfg.Register(&MainNetParams)
+   //   if err == nil {
+   //      err = chaincfg.Register(&TestNetParams)
+   //   }
+   //   if err != nil {
+   //      panic(err)
+   //   }
+   //}
    switch chain {
    case "test":
       return &TestNetParams
