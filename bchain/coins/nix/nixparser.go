@@ -34,6 +34,9 @@ const (
    CTDATA_ADDR_INT = 0xf9
    CBASE_ADDR_INT = 0xfa
 
+   // Number of blocks per budget cycle
+   nBlocksPerPeriod = 43200
+
    // Labels
    ZEROCOIN_LABEL = "Zerocoin Accumulator"
    STAKE_LABEL = "Proof of Stake TX"

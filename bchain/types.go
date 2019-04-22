@@ -71,6 +71,7 @@ type Vout struct {
 	JsonValue    json.Number  `json:"value"`
 	N            uint32       `json:"n"`
 	ScriptPubKey ScriptPubKey `json:"scriptPubKey"`
+	Type         string       `json:"type,omitempty"`
 }
 
 // Tx is blockchain transaction
