@@ -1,7 +1,13 @@
 package nix
 
 import (
+   "blockbook/bchain"
    "blockbook/bchain/coins/btc"
+   "bytes"
+   "encoding/binary"
+   "encoding/hex"
+   "io"
+   "math/big"
 
    "github.com/martinboehm/btcd/wire"
    "github.com/martinboehm/btcutil/chaincfg"
@@ -21,10 +27,20 @@ const (
 
    // Dummy Internal Addresses
    STAKE_ADDR_INT = 0xf7
+   RINGCT_ADDR_INT = 0xf8
+   CTDATA_ADDR_INT = 0xf9
+   CBASE_ADDR_INT = 0xfa
 
    // Labels
    ZEROCOIN_LABEL = "Zerocoin Accumulator"
    STAKE_LABEL = "Proof of Stake TX"
+   ZCMINT_LABEL = "Zerocoin Mint"
+   ZCSPEND_LABEL = "Zerocoin Spend"
+   CBASE_LABEL = "CoinBase TX"
+   //DATA_LABEL = "DATA"
+   RINGCT_LABEL = "RingCT"
+   CTDATA_LABEL = "Rangeproof"
+
 )
 
 var (
@@ -53,11 +69,23 @@ func init() {
 // NixParser handle
 type NixParser struct {
    *btc.BitcoinParser
+   baseparser                           *bchain.BaseParser
+   BitcoinOutputScriptToAddressesFunc   btc.OutputScriptToAddressesFunc
+   BitcoinGetAddrDescFromAddress        func(address string) (bchain.AddressDescriptor, error)
 }
 
 // NewNixParser returns new NixParser instance
 func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
-   return &NixParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
+   bcp := btc.NewBitcoinParser(params, c)
+   p := &NixParser{
+      BitcoinParser:   bcp,
+      baseparser:      &bchain.BaseParser{},
+      BitcoinGetAddrDescFromAddress: bcp.GetAddrDescFromAddress,
+   }
+   p.BitcoinOutputScriptToAddressesFunc = p.OutputScriptToAddressesFunc
+   p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
+   return p
+   //return &NixParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
 }
 
 // GetChainParams contains network parameters for the main and test Nix network
@@ -77,4 +105,142 @@ func GetChainParams(chain string) *chaincfg.Params {
    default:
       return &MainNetParams
    }
+}
+
+func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, error) {
+   if isZeroCoinSpendScript(script) {
+      return []string{ZCSPEND_LABEL}, false, nil
+   }
+   if isZeroCoinMintScript(script) {
+      return []string{ZCMINT_LABEL}, false, nil
+   }
+   if isCoinBaseScript(script) {
+      return []string{CBASE_LABEL}, false, nil
+   }
+   if isCoinStakeScript(script) {
+      return []string{STAKE_LABEL}, false, nil
+   }
+   if isRangeProofScript(script) {
+      return []string{CTDATA_LABEL}, false, nil
+   }
+   if isRingCTScript(script) {
+      return []string{RINGCT_LABEL}, false, nil
+   }
+
+   rv, s, _ := p.BitcoinOutputScriptToAddressesFunc(script)
+   return rv, s, nil
+}
+
+// GetAddrDescFromAddress returns internal address representation (descriptor) of given address
+func (p *NixParser) GetAddrDescFromAddress(address string) (bchain.AddressDescriptor, error) {
+   // dummy address for cbase output
+   if address == STAKE_LABEL {
+      return bchain.AddressDescriptor{CBASE_ADDR_INT}, nil
+   }
+   // dummy address for stake output
+   if address == STAKE_LABEL {
+      return bchain.AddressDescriptor{STAKE_ADDR_INT}, nil
+   }
+   // dummy address for RingCT output
+   if address == RINGCT_LABEL {
+      return bchain.AddressDescriptor{RINGCT_ADDR_INT}, nil
+   }
+   // dummy address for Rangeproof output
+   if address == CTDATA_LABEL {
+      return bchain.AddressDescriptor{CTDATA_ADDR_INT}, nil
+   }
+   return p.BitcoinGetAddrDescFromAddress(address)
+}
+
+
+func (p *NixParser) GetAddrDescForUnknownInput(tx *bchain.Tx, input int) bchain.AddressDescriptor {
+   if len(tx.Vin) > input {
+      scriptHex := tx.Vin[input].ScriptSig.Hex
+
+      if scriptHex != "" {
+         script, _ := hex.DecodeString(scriptHex)
+         return script
+      }
+   }
+
+   s := make([]byte, 10)
+   return s
+}
+
+func (p *NixParser) GetValueSatForUnknownInput(tx *bchain.Tx, input int) *big.Int {
+   if len(tx.Vin) > input {
+      scriptHex := tx.Vin[input].ScriptSig.Hex
+
+      if scriptHex != "" {
+         script, _ := hex.DecodeString(scriptHex)
+         if isZeroCoinSpendScript(script) {
+            valueSat,  err := p.GetValueSatFromZerocoinSpend(script)
+            if err != nil {
+               glog.Warningf("tx %v: input %d unable to convert denom to big int", tx.Txid, input)
+               return big.NewInt(0)
+            }
+            return valueSat
+         }
+      }
+   }
+   return big.NewInt(0)
+}
+
+// Decodes the amount from the zerocoin spend script
+func (p *VeilParser) GetValueSatFromZerocoinSpend(signatureScript []byte) (*big.Int, error) {
+   r := bytes.NewReader(signatureScript)
+   r.Seek(1, io.SeekCurrent)                       // skip opcode
+   len, err := Uint8(r)                            // get serialized coinspend size
+   if err != nil {
+      return nil, err
+   }
+   r.Seek(int64(len), io.SeekCurrent)              // and skip its bytes
+   r.Seek(2, io.SeekCurrent)                       // skip version and spendtype
+   len,  err = Uint8(r)                            // get pubkey len
+   if err != nil {
+      return nil, err
+   }
+   r.Seek(int64(len), io.SeekCurrent)              // and skip its bytes
+   len, err = Uint8(r)                             // get vchsig len
+   if err != nil {
+      return nil, err
+   }
+   r.Seek(int64(len), io.SeekCurrent)              // and skip its bytes
+   // get denom
+   denom, err := Uint32(r, binary.LittleEndian)    // get denomination
+   if err != nil {
+      return nil, err
+   }
+
+   return big.NewInt(int64(denom)*1e8), nil
+}
+
+// Checks if script is OP_ZEROCOINMINT
+func isZeroCoinMintScript(signatureScript []byte) bool {
+   return len(signatureScript) > 1 && signatureScript[0] == OP_ZEROCOINMINT
+}
+
+// Checks if script is OP_ZEROCOINSPEND
+func isZeroCoinSpendScript(signatureScript []byte) bool {
+   return len(signatureScript) >= 100 && signatureScript[0] == OP_ZEROCOINSPEND
+}
+
+// Checks if script is dummy internal address for Coinbase
+func isCoinBaseScript(signatureScript []byte) bool {
+   return len(signatureScript) == 1 && signatureScript[0] == CBASE_ADDR_INT
+}
+
+// Checks if script is dummy internal address for Stake
+func isCoinStakeScript(signatureScript []byte) bool {
+   return len(signatureScript) == 1 && signatureScript[0] == STAKE_ADDR_INT
+}
+
+// Checks if script is dummy internal address for RangeProof
+func isRangeProofScript(signatureScript []byte) bool {
+   return len(signatureScript) == 1 && signatureScript[0] == CTDATA_ADDR_INT
+}
+
+// Checks if script is dummy internal address for RingCT
+func isRingCTScript(signatureScript []byte) bool {
+   return len(signatureScript) == 1 && signatureScript[0] == RINGCT_ADDR_INT
 }
