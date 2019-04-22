@@ -6,6 +6,8 @@ import (
    "bytes"
    "encoding/binary"
    "encoding/hex"
+   "encoding/json"
+   "fmt"
    "io"
    "math/big"
 
@@ -106,6 +108,56 @@ func GetChainParams(chain string) *chaincfg.Params {
    default:
       return &MainNetParams
    }
+}
+
+// PackTx packs transaction to byte array using protobuf
+func (p *NixParser) PackTx(tx *bchain.Tx, height uint32, blockTime int64) ([]byte, error) {
+   return p.baseparser.PackTx(tx, height, blockTime)
+}
+
+
+// UnpackTx unpacks transaction from protobuf byte array
+func (p *NixParser) UnpackTx(buf []byte) (*bchain.Tx, uint32, error) {
+   return p.baseparser.UnpackTx(buf)
+}
+
+
+// ParseTxFromJson parses JSON message containing transaction and returns Tx struct
+func (p *NixParser) ParseTxFromJson(msg json.RawMessage) (*bchain.Tx, error) {
+   var tx bchain.Tx
+   err := json.Unmarshal(msg, &tx)
+   if err != nil {
+      return nil, err
+   }
+
+   for i := range tx.Vout {
+      vout := &tx.Vout[i]
+      // convert vout.JsonValue to big.Int and clear it, it is only temporary value used for unmarshal
+      vout.ValueSat, err = p.AmountToBigInt(vout.JsonValue)
+      if err != nil {
+         return nil, err
+      }
+      vout.JsonValue = ""
+
+      if vout.ScriptPubKey.Addresses == nil {
+         vout.ScriptPubKey.Addresses = []string{}
+      }
+
+      if vout.ScriptPubKey.Hex == "" {
+         if vout.Type == "ringct" {
+            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", RINGCT_ADDR_INT)
+         } else if vout.Type == "data" {
+            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", CTDATA_ADDR_INT)
+         } else if vout.Type == "coinbase" {
+            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", CBASE_ADDR_INT)
+         } else if vout.Type == "standard" {
+            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", STAKE_ADDR_INT)
+         }
+      }
+
+   }
+
+   return &tx, nil
 }
 
 func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, error) {
