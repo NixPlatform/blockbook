@@ -37,6 +37,11 @@ func (p *BaseParser) GetAddrDescForUnknownInput(tx *Tx, input int) AddressDescri
 	return nil
 }
 
+// GetValueSatForUnknownInput returns 0
+func (p *BaseParser) GetValueSatForUnknownInput(tx *Tx, input int) *big.Int {
+	return big.NewInt(0)
+}
+
 const zeros = "0000000000000000000000000000000000000000"
 
 // AmountToBigInt converts amount in json.Number (string) to big.Int
