@@ -9,13 +9,14 @@ import (
    "io"
    "math/big"
 
+   "github.com/golang/glog"
    "github.com/martinboehm/btcd/wire"
    "github.com/martinboehm/btcutil/chaincfg"
 )
 
 const (
    MainnetMagic wire.BitcoinNet = 0xa3d0cfb6
-   TestnetMagic wire.BitcoinNet = 0xa3d0cfb6 // "vert" word
+   TestnetMagic wire.BitcoinNet = 0xa3d0cfb6
    RegtestMagic wire.BitcoinNet = 0xdab5bffc
 
    // Dummy TxId for zerocoin
@@ -187,7 +188,7 @@ func (p *NixParser) GetValueSatForUnknownInput(tx *bchain.Tx, input int) *big.In
 }
 
 // Decodes the amount from the zerocoin spend script
-func (p *VeilParser) GetValueSatFromZerocoinSpend(signatureScript []byte) (*big.Int, error) {
+func (p *NixParser) GetValueSatFromZerocoinSpend(signatureScript []byte) (*big.Int, error) {
    r := bytes.NewReader(signatureScript)
    r.Seek(1, io.SeekCurrent)                       // skip opcode
    len, err := Uint8(r)                            // get serialized coinspend size
