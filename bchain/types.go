@@ -104,6 +104,8 @@ type BlockHeader struct {
 	Confirmations int    `json:"confirmations"`
 	Size          int    `json:"size"`
 	Time          int64  `json:"time,omitempty"`
+	MoneySupply   json.Number `json:"moneysupply"`
+	Type          uint8  // 1 = PoW, 2 = PoS
 }
 
 // BlockInfo contains extended block header data and a list of block txids
@@ -115,6 +117,7 @@ type BlockInfo struct {
 	Bits       string      `json:"bits"`
 	Difficulty json.Number `json:"difficulty"`
 	Txids      []string    `json:"tx,omitempty"`
+	ZerocoinSupply  []ZCsupply    `json:"zerocoinsupply,omitempty"`
 }
 
 // MempoolEntry is used to get data about mempool entry
@@ -135,6 +138,12 @@ type MempoolEntry struct {
 	Depends         []string    `json:"depends"`
 }
 
+type ZCsupply struct {
+	Denom    string          `json:"denom"`
+	Amount   json.Number     `json:"amount"`
+	Percent  float64         `json:"percent"`
+}
+
 // ChainInfo is used to get information about blockchain
 type ChainInfo struct {
 	Chain           string  `json:"chain"`
@@ -148,6 +157,11 @@ type ChainInfo struct {
 	ProtocolVersion string  `json:"protocolversion"`
 	Timeoffset      float64 `json:"timeoffset"`
 	Warnings        string  `json:"warnings"`
+	PoWDiff         json.Number  `json:"difficulty_pow"`
+	PoSDiff         json.Number  `json:"difficulty_pos"`
+	MoneySupply     json.Number `json:"moneysupply"`
+	ZerocoinSupply  []ZCsupply    `json:"zerocoinsupply"`
+	NextSuperBlock  int
 }
 
 // RPCError defines rpc error returned by backend
@@ -273,6 +287,7 @@ type BlockChainParser interface {
 	PackTx(tx *Tx, height uint32, blockTime int64) ([]byte, error)
 	UnpackTx(buf []byte) (*Tx, uint32, error)
 	GetAddrDescForUnknownInput(tx *Tx, input int) AddressDescriptor
+	GetValueSatForUnknownInput(tx *Tx, input int) *big.Int
 	// blocks
 	PackBlockHash(hash string) ([]byte, error)
 	UnpackBlockHash(buf []byte) (string, error)

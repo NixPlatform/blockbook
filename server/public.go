@@ -1107,3 +1107,15 @@ func (s *PublicServer) apiEstimateFee(r *http.Request, apiVersion int) (interfac
 	}
 	return nil, api.NewAPIError("Missing parameter 'number of blocks'", true)
 }
+
+// returns the amount of tokens on a given zerocoin denom
+func formatDenom(d bchain.ZCsupply) string {
+	val, _ := d.Amount.Float64()
+	coins := val / 1e8
+	den, err := strconv.Atoi(d.Denom)
+	if err != nil {
+		return ""
+	}
+	coins = coins / float64(den)
+	return fmt.Sprintf("%.0f", coins)
+}
