@@ -258,7 +258,7 @@ func (b *NixRPC) GetZerocoinSupply(height uint32) ([]bchain.ZCsupply, error) {
 	glog.V(1).Info("rpc: getblockhash ", height)
 
 	res := ResGetZerocoinSupply{}
-	req := CmdGetZerocoinSupply{Method: "getzerocoinsupply"}
+	req := CmdGetZerocoinSupply{Method: "ghostprivacysets"}
 	req.Params.Height = height
 	err := b.Call(&req, &res)
 

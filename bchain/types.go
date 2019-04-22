@@ -143,6 +143,7 @@ type ZCsupply struct {
 	Denom    string          `json:"denom"`
 	Amount   json.Number     `json:"amount"`
 	Percent  float64         `json:"percent"`
+	Total	 json.Number	 `json:"total"`
 }
 
 // ChainInfo is used to get information about blockchain
