@@ -142,9 +142,9 @@ func (p *NixParser) NixOutputScriptToAddresses(script []byte) ([]string, bool, e
 func GetChainParams(chain string) *chaincfg.Params {
    if !chaincfg.IsRegistered(&MainNetParams) {
      err := chaincfg.Register(&MainNetParams)
-     if err == nil {
-        err = chaincfg.Register(&TestNetParams)
-     }
+     //if err == nil {
+     //   err = chaincfg.Register(&TestNetParams)
+     //}
      if err != nil {
         panic(err)
      }
