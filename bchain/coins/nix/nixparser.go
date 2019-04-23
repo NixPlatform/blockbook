@@ -88,7 +88,7 @@ func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
    p := &NixParser{
       BitcoinParser:   bcp,
       baseparser:      &bchain.BaseParser{},
-      BitcoinGetAddrDescFromAddress: p.GetAddrDescFromAddress,
+      //BitcoinGetAddrDescFromAddress: p.GetAddrDescFromAddress,
    }
    //p.BitcoinOutputScriptToAddressesFunc = p.OutputScriptToAddressesFunc
    //p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
