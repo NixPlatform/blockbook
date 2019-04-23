@@ -13,7 +13,9 @@ import (
 
    "github.com/golang/glog"
    "github.com/martinboehm/btcd/wire"
+   "github.com/martinboehm/btcutil"
    "github.com/martinboehm/btcutil/chaincfg"
+   "github.com/martinboehm/btcutil/txscript"
 )
 
 const (
@@ -76,8 +78,8 @@ func init() {
 type NixParser struct {
    *btc.BitcoinParser
    baseparser                           *bchain.BaseParser
-   BitcoinOutputScriptToAddressesFunc   btc.OutputScriptToAddressesFunc
-   BitcoinGetAddrDescFromAddress        func(address string) (bchain.AddressDescriptor, error)
+   //BitcoinOutputScriptToAddressesFunc   btc.OutputScriptToAddressesFunc
+   //BitcoinGetAddrDescFromAddress        func(address string) (bchain.AddressDescriptor, error)
 }
 
 // NewNixParser returns new NixParser instance
@@ -86,12 +88,46 @@ func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
    p := &NixParser{
       BitcoinParser:   bcp,
       baseparser:      &bchain.BaseParser{},
-      BitcoinGetAddrDescFromAddress: bcp.GetAddrDescFromAddress,
+      BitcoinGetAddrDescFromAddress: p.GetAddrDescFromAddress,
    }
-   p.BitcoinOutputScriptToAddressesFunc = p.OutputScriptToAddressesFunc
-   p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
+   //p.BitcoinOutputScriptToAddressesFunc = p.OutputScriptToAddressesFunc
+   //p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
    return p
    //return &NixParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
+}
+
+// addressToOutputScript converts address to ScriptPubKey
+func (p *NixParser) addressToOutputScript(address string) ([]byte, error) {
+   da, err := btcutil.DecodeAddress(address, p.Params)
+   if err != nil {
+      return nil, err
+   }
+   script, err := txscript.PayToAddrScript(da)
+   if err != nil {
+      return nil, err
+   }
+   return script, nil
+}
+
+func (p *NixParser) NixOutputScriptToAddresses(script []byte) ([]string, bool, error) {
+   sc, addresses, _, err := txscript.ExtractPkScriptAddrs(script, p.Params)
+   if err != nil {
+      return nil, false, err
+   }
+   rv := make([]string, len(addresses))
+   for i, a := range addresses {
+      rv[i] = a.EncodeAddress()
+   }
+   var s bool
+   if sc == txscript.PubKeyHashTy || sc == txscript.WitnessV0PubKeyHashTy || sc == txscript.ScriptHashTy || sc == txscript.WitnessV0ScriptHashTy {
+      s = true
+   } else if len(rv) == 0 {
+      or := p.TryParseOPReturn(script)
+      if or != "" {
+         rv = []string{or}
+      }
+   }
+   return rv, s, nil
 }
 
 // GetChainParams contains network parameters for the main and test Nix network
@@ -183,7 +219,7 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
       return []string{RINGCT_LABEL}, false, nil
    }
 
-   rv, s, _ := p.BitcoinOutputScriptToAddressesFunc(script)
+   rv, s, _ := p.NixOutputScriptToAddresses(script)
    return rv, s, nil
 }
 
@@ -205,7 +241,7 @@ func (p *NixParser) GetAddrDescFromAddress(address string) (bchain.AddressDescri
    if address == CTDATA_LABEL {
       return bchain.AddressDescriptor{CTDATA_ADDR_INT}, nil
    }
-   return p.BitcoinGetAddrDescFromAddress(address)
+   return p.addressToOutputScript(address)
 }
 
 
