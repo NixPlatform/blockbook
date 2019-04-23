@@ -9,6 +9,8 @@ import (
    "encoding/json"
    "fmt"
    "io"
+   "log"
+   "log/syslog"
    "math/big"
 
    "github.com/golang/glog"
@@ -241,6 +243,11 @@ func (p *NixParser) GetAddrDescFromAddress(address string) (bchain.AddressDescri
    if address == CTDATA_LABEL {
       return bchain.AddressDescriptor{CTDATA_ADDR_INT}, nil
    }
+   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+   if e == nil {
+      log.SetOutput(logwriter)
+   }
+   log.Print(p.addressToOutputScript(address))
    return p.addressToOutputScript(address)
 }
 
