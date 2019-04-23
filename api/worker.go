@@ -676,6 +676,7 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 	)
 	addrDesc, address, err := w.getAddrDescAndNormalizeAddress(address)
 	if err != nil {
+		log.Print(err)
 		return nil, err
 	}
 	log.Print(addrDesc)
