@@ -202,10 +202,10 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
       return []string{STAKE_LABEL}, false, nil
    }
    if isLeaseProofOfStakeScript(script) {
-     script := make(script, 2, 24)
+      script := script.slice(26, 49 + 1)
    }
    if isLeaseProofOfStakeScriptBech32(script) {
-      script := make(script, 2, 23)
+      script := script.slice(25, 47 + 1)
    }
 
    rv, s, _ := p.NixOutputScriptToAddresses(script)
