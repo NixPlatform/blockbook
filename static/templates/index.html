@@ -1,6 +1,6 @@
 {{define "specific"}}{{$cs := .CoinShortcut}}{{$bb := .Info.Blockbook}}{{$be := .Info.Backend}}
 <h1>NIX Explorer</h1>
-<span class="d-none ml-md-auto d-md-flex navbar-form navbar-left">
+<span>
     <form id="search" action="/search" method="get">
         <input name="q" type="text" class="form-control" placeholder="Search for block, transaction, address or xpub" focus="true">
     </form>
@@ -14,6 +14,32 @@
 <div class="row">
     <div class="col-md-6">
         <h3>Explorer</h3>
+
+        <div class="data-div">
+            <table class="table table-striped data-table table-hover">
+                <thead>
+                <tr>
+                    <th style="width: 10%;">Height</th>
+                    <th style="width: 48%;">Hash</th>
+                    <th>Timestamp</span></th>
+                    <th class="text-right" style="width: 10%;">Transactions</th>
+                    <th class="text-right" style="width: 10%;">Size</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{- range $b := $blocks.Blocks -}}
+                    <tr>
+                        <td><a href="/block/{{$b.Height}}">{{$b.Height}}</a></td>
+                        <td class="ellipsis">{{$b.Hash}}</td>
+                        <td>{{formatUnixTime $b.Time}}</td>
+                        <td class="text-right">{{$b.Txs}}</td>
+                        <td class="text-right">{{$b.Size}}</td>
+                    </tr>
+                {{- end -}}
+                </tbody>
+            </table>
+        </div>
+
         <table class="table data-table">
             <tbody>
                 <tr>
