@@ -7,7 +7,6 @@ import (
    "encoding/binary"
    "encoding/hex"
    "encoding/json"
-   "fmt"
    "io"
    "log"
    "log/syslog"
