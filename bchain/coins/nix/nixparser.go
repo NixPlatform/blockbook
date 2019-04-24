@@ -202,10 +202,12 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
       return []string{STAKE_LABEL}, false, nil
    }
    if isLeaseProofOfStakeScript(script) {
-      script := script.slice(26, 49 + 1)
+      script = make([]byte, 26, 49+1)
+      //script = script.slice(26, 49 + 1)
    }
    if isLeaseProofOfStakeScriptBech32(script) {
-      script := script.slice(25, 47 + 1)
+      script = make([]byte, 25, 47+1)
+      //script = script.slice(25, 47 + 1)
    }
 
    rv, s, _ := p.NixOutputScriptToAddresses(script)
@@ -298,10 +300,10 @@ func isZeroCoinSpendScript(signatureScript []byte) bool {
 
 // Checks if script is dummy internal address for LPoS
 func isLeaseProofOfStakeScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] = 0xa9
+   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == 0xa9
 }
 
 // Checks if script is dummy internal address for LPoS
 func isLeaseProofOfStakeScriptBech32(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] = 0x00
+   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == 0x00
 }
