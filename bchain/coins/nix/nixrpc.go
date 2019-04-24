@@ -72,15 +72,16 @@ func (g *NixRPC) GetBlockInfo(hash string) (*bchain.BlockInfo, error) {
 	}
 	bi.BlockHeader.MoneySupply = header.MoneySupply
 
-	// block is PoS (type=2) when nonce is zero
-	var blocktype uint8
-	blocktype = 1
-	nonce, _ := bi.Nonce.Int64()
-	if nonce == 0 {
-		blocktype = 2
-	}
-	bi.BlockHeader.Type = blocktype
+	// block is PoS (type=2) when height is greater than 52999
+	var height uint32
+	height = bi.Height
 
+	if height >= 53000 {
+		bi.BlockHeader.Type = 2
+	}
+	else{
+		bi.BlockHeader.Type = 1
+	}
 	// get zerocoin Supply
 	var zcsupply []bchain.ZCsupply
 	zcsupply, err = g.GetZerocoinSupply(bi.BlockHeader.Height)
