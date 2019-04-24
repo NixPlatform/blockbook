@@ -31,10 +31,7 @@ const (
    // Zerocoin op codes
    OP_ZEROCOINMINT  = 0xc1
    OP_ZEROCOINSPEND  = 0xc2
-
-   // Dummy Internal Addresses
-   STAKE_ADDR_INT = 0xf7
-   LPOS_ADDR_INT = 0xb8
+   OP_COINSTAKE = 0xb8
 
    // Number of blocks per budget cycle
    nBlocksPerPeriod = 43200
@@ -204,8 +201,11 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
    if isCoinStakeScript(script) {
       return []string{STAKE_LABEL}, false, nil
    }
-   if isLeaseProofOfStakeScripts(script) {
-      return []string{LPOS_LABEL}, false, nil
+   if isLeaseProofOfStakeScript(script) {
+     script := make([]byte, 2, 24)
+   }
+   if isLeaseProofOfStakeScriptBech32(script) {
+      script := make([]byte, 2, 23)
    }
 
    rv, s, _ := p.NixOutputScriptToAddresses(script)
@@ -214,18 +214,6 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
 
 // GetAddrDescFromAddress returns internal address representation (descriptor) of given address
 func (p *NixParser) GetAddrDescFromAddress(address string) (bchain.AddressDescriptor, error) {
-   // dummy address for cbase output
-   if address == CBASE_LABEL {
-      return bchain.AddressDescriptor{CBASE_ADDR_INT}, nil
-   }
-   // dummy address for stake output
-   if address == STAKE_LABEL {
-      return bchain.AddressDescriptor{STAKE_ADDR_INT}, nil
-   }
-   // dummy address for LPOS output
-   if address == LPOS_LABEL {
-      return bchain.AddressDescriptor{LPOS_ADDR_INT}, nil
-   }
 
    logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
    if e == nil {
@@ -308,17 +296,12 @@ func isZeroCoinSpendScript(signatureScript []byte) bool {
    return len(signatureScript) >= 100 && signatureScript[0] == OP_ZEROCOINSPEND
 }
 
-// Checks if script is dummy internal address for Coinbase
-func isCoinBaseScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == CBASE_ADDR_INT
-}
-
-// Checks if script is dummy internal address for Stake
-func isCoinStakeScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == STAKE_ADDR_INT
+// Checks if script is dummy internal address for LPoS
+func isLeaseProofOfStakeScript(signatureScript []byte) bool {
+   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] = 0xa9
 }
 
 // Checks if script is dummy internal address for LPoS
-func isLeaseProofOfStakeScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == LPOS_ADDR_INT
+func isLeaseProofOfStakeScriptBech32(signatureScript []byte) bool {
+   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] = 0x00
 }
