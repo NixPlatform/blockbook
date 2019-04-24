@@ -34,9 +34,7 @@ const (
 
    // Dummy Internal Addresses
    STAKE_ADDR_INT = 0xf7
-   RINGCT_ADDR_INT = 0xf8
-   CTDATA_ADDR_INT = 0xf9
-   CBASE_ADDR_INT = 0xfa
+   LPOS_ADDR_INT = 0xb8
 
    // Number of blocks per budget cycle
    nBlocksPerPeriod = 43200
@@ -47,10 +45,7 @@ const (
    ZCMINT_LABEL = "Zerocoin Mint"
    ZCSPEND_LABEL = "Zerocoin Spend"
    CBASE_LABEL = "CoinBase TX"
-   //DATA_LABEL = "DATA"
-   RINGCT_LABEL = "RingCT"
-   CTDATA_LABEL = "Rangeproof"
-
+   LPOS_LABEL = "Leasing Proof of Stake TX"
 )
 
 var (
@@ -118,6 +113,7 @@ func (p *NixParser) addressToOutputScript(address string) ([]byte, error) {
 }
 
 func (p *NixParser) NixOutputScriptToAddresses(script []byte) ([]string, bool, error) {
+   //need to add lpos extractions
    sc, addresses, _, err := txscript.ExtractPkScriptAddrs(script, p.Params)
    if err != nil {
       return nil, false, err
@@ -190,18 +186,6 @@ func (p *NixParser) ParseTxFromJson(msg json.RawMessage) (*bchain.Tx, error) {
          vout.ScriptPubKey.Addresses = []string{}
       }
 
-      if vout.ScriptPubKey.Hex == "" {
-         if vout.Type == "ringct" {
-            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", RINGCT_ADDR_INT)
-         } else if vout.Type == "data" {
-            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", CTDATA_ADDR_INT)
-         } else if vout.Type == "coinbase" {
-            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", CBASE_ADDR_INT)
-         } else if vout.Type == "standard" {
-            vout.ScriptPubKey.Hex = fmt.Sprintf("%02x", STAKE_ADDR_INT)
-         }
-      }
-
    }
 
    return &tx, nil
@@ -220,11 +204,8 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
    if isCoinStakeScript(script) {
       return []string{STAKE_LABEL}, false, nil
    }
-   if isRangeProofScript(script) {
-      return []string{CTDATA_LABEL}, false, nil
-   }
-   if isRingCTScript(script) {
-      return []string{RINGCT_LABEL}, false, nil
+   if isLeaseProofOfStakeScripts(script) {
+      return []string{LPOS_LABEL}, false, nil
    }
 
    rv, s, _ := p.NixOutputScriptToAddresses(script)
@@ -234,21 +215,18 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
 // GetAddrDescFromAddress returns internal address representation (descriptor) of given address
 func (p *NixParser) GetAddrDescFromAddress(address string) (bchain.AddressDescriptor, error) {
    // dummy address for cbase output
-   if address == STAKE_LABEL {
+   if address == CBASE_LABEL {
       return bchain.AddressDescriptor{CBASE_ADDR_INT}, nil
    }
    // dummy address for stake output
    if address == STAKE_LABEL {
       return bchain.AddressDescriptor{STAKE_ADDR_INT}, nil
    }
-   // dummy address for RingCT output
-   if address == RINGCT_LABEL {
-      return bchain.AddressDescriptor{RINGCT_ADDR_INT}, nil
+   // dummy address for LPOS output
+   if address == LPOS_LABEL {
+      return bchain.AddressDescriptor{LPOS_ADDR_INT}, nil
    }
-   // dummy address for Rangeproof output
-   if address == CTDATA_LABEL {
-      return bchain.AddressDescriptor{CTDATA_ADDR_INT}, nil
-   }
+
    logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
    if e == nil {
       log.SetOutput(logwriter)
@@ -340,12 +318,7 @@ func isCoinStakeScript(signatureScript []byte) bool {
    return len(signatureScript) == 1 && signatureScript[0] == STAKE_ADDR_INT
 }
 
-// Checks if script is dummy internal address for RangeProof
-func isRangeProofScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == CTDATA_ADDR_INT
-}
-
-// Checks if script is dummy internal address for RingCT
-func isRingCTScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == RINGCT_ADDR_INT
+// Checks if script is dummy internal address for LPoS
+func isLeaseProofOfStakeScript(signatureScript []byte) bool {
+   return len(signatureScript) == 1 && signatureScript[0] == LPOS_ADDR_INT
 }
