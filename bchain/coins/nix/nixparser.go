@@ -195,12 +195,6 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
    if isZeroCoinMintScript(script) {
       return []string{ZCMINT_LABEL}, false, nil
    }
-   if isCoinBaseScript(script) {
-      return []string{CBASE_LABEL}, false, nil
-   }
-   if isCoinStakeScript(script) {
-      return []string{STAKE_LABEL}, false, nil
-   }
    if isLeaseProofOfStakeScript(script) {
       script = script[26: 49 + 1]
    }
