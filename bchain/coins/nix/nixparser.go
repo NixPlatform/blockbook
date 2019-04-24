@@ -100,12 +100,12 @@ func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
 
 // addressToOutputScript converts address to ScriptPubKey
 func (p *NixParser) addressToOutputScript(address string) ([]byte, error) {
-   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-   if e == nil {
-      log.SetOutput(logwriter)
-   }
-   log.Print(address)
-   log.Print(p.Params)
+   //logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+   //if e == nil {
+   //   log.SetOutput(logwriter)
+   //}
+   //log.Print(address)
+   //log.Print(p.Params)
    da, err := btcutil.DecodeAddress(address, p.Params)
    if err != nil {
       return nil, err
@@ -253,7 +253,7 @@ func (p *NixParser) GetAddrDescFromAddress(address string) (bchain.AddressDescri
    if e == nil {
       log.SetOutput(logwriter)
    }
-   log.Print(p.addressToOutputScript(address))
+   //log.Print(p.addressToOutputScript(address))
    return p.addressToOutputScript(address)
 }
 
