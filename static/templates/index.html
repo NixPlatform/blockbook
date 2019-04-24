@@ -1,7 +1,7 @@
 {{define "specific"}}{{$cs := .CoinShortcut}}{{$bb := .Info.Blockbook}}{{$be := .Info.Backend}}{{$blocks := .Blocks}}
 <h1>NIX Explorer</h1>
 
-{{if not $bb.InSync}}
+{{if .InternalExplorer}}
 <div class="row">
     <div class="col-md-12">
         <form id="search" action="/search" method="get">
@@ -18,7 +18,7 @@
 <h3 class="bg-warning text-white" style="padding: 20px;">Synchronization with backend is disabled, the state of index is not up to date.</h3>
 {{- end -}}
 
-{{if not $bb.InSync}}
+{{if .InternalExplorer}}
 <div class="row">
     <div class="col-md-12">
         <h3>Latest 10 blocks</h3>
