@@ -741,18 +741,9 @@ func (s *PublicServer) explorerIndex(w http.ResponseWriter, r *http.Request) (tp
 	var si *api.SystemInfo
 	var err error
 
-	s.metrics.ExplorerViews.With(common.Labels{"action": "blocks"}).Inc()
-	page, ec := strconv.Atoi(r.URL.Query().Get("page"))
-	if ec != nil {
-		page = 0
-	}
-	blocks, err = s.api.GetBlocks(page, 10)
-	if err != nil {
-		return errorTpl, nil, err
-	}
-
 	s.metrics.ExplorerViews.With(common.Labels{"action": "index"}).Inc()
 	si, err = s.api.GetSystemInfo(false)
+	blocks, err = s.api.GetBlocks(0, 10)
 	if err != nil {
 		return errorTpl, nil, err
 	}
