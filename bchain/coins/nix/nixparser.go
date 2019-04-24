@@ -32,17 +32,15 @@ const (
    OP_ZEROCOINMINT  = 0xc1
    OP_ZEROCOINSPEND  = 0xc2
    OP_COINSTAKE = 0xb8
+   OP_HASH160 = 0xa9
+   OP_0 = 0x00
 
    // Number of blocks per budget cycle
    nBlocksPerPeriod = 43200
 
    // Labels
-   ZEROCOIN_LABEL = "Zerocoin Accumulator"
-   STAKE_LABEL = "Proof of Stake TX"
    ZCMINT_LABEL = "Zerocoin Mint"
    ZCSPEND_LABEL = "Zerocoin Spend"
-   CBASE_LABEL = "CoinBase TX"
-   LPOS_LABEL = "Leasing Proof of Stake TX"
 )
 
 var (
@@ -290,12 +288,12 @@ func isZeroCoinSpendScript(signatureScript []byte) bool {
    return len(signatureScript) >= 100 && signatureScript[0] == OP_ZEROCOINSPEND
 }
 
-// Checks if script is dummy internal address for LPoS
+// Checks if script is p2sh lpos contract
 func isLeaseProofOfStakeScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == 0xa9
+   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_HASH160
 }
 
-// Checks if script is dummy internal address for LPoS
+// Checks if script bech32 lpos contract
 func isLeaseProofOfStakeScriptBech32(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == 0x00
+   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_0
 }
