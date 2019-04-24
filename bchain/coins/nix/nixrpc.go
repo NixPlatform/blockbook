@@ -78,8 +78,7 @@ func (g *NixRPC) GetBlockInfo(hash string) (*bchain.BlockInfo, error) {
 
 	if height >= 53000 {
 		bi.BlockHeader.Type = 2
-	}
-	else{
+	} else {
 		bi.BlockHeader.Type = 1
 	}
 	// get zerocoin Supply
