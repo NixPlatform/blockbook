@@ -289,10 +289,22 @@ func isZeroCoinSpendScript(signatureScript []byte) bool {
 
 // Checks if script is p2sh lpos contract
 func isLeaseProofOfStakeScript(signatureScript []byte) bool {
+   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+   if e == nil {
+      log.SetOutput(logwriter)
+   }
+   log.Print(signatureScript[0])
+   log.Print(signatureScript[2])
    return signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_HASH160
 }
 
 // Checks if script bech32 lpos contract
 func isLeaseProofOfStakeScriptBech32(signatureScript []byte) bool {
+   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+   if e == nil {
+      log.SetOutput(logwriter)
+   }
+   log.Print(signatureScript[0])
+   log.Print(signatureScript[2])
    return signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_0
 }
