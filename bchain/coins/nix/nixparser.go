@@ -290,10 +290,10 @@ func isZeroCoinSpendScript(signatureScript []byte) bool {
 
 // Checks if script is p2sh lpos contract
 func isLeaseProofOfStakeScript(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_HASH160
+   return signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_HASH160
 }
 
 // Checks if script bech32 lpos contract
 func isLeaseProofOfStakeScriptBech32(signatureScript []byte) bool {
-   return len(signatureScript) == 1 && signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_0
+   return signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_0
 }
