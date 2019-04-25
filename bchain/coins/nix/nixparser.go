@@ -65,10 +65,13 @@ func init() {
    TestNetParams.Bech32HRPSegwit = "tnix"
 }
 
+type OutputScriptToAddressesFunc func(script []byte) ([]string, bool, error)
+
 // NixParser handle
 type NixParser struct {
    *btc.BitcoinParser
    baseparser                           *bchain.BaseParser
+   OutputScriptToAddressesFunc           OutputScriptToAddressesFunc
    //BitcoinOutputScriptToAddressesFunc   btc.OutputScriptToAddressesFunc
    //BitcoinGetAddrDescFromAddress        func(address string) (bchain.AddressDescriptor, error)
 }
@@ -82,9 +85,14 @@ func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
       //BitcoinGetAddrDescFromAddress: p.GetAddrDescFromAddress,
    }
    //p.BitcoinOutputScriptToAddressesFunc = p.OutputScriptToAddressesFunc
-   //p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
+   p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
    return p
    //return &NixParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
+}
+
+// GetAddressesFromAddrDesc returns addresses for given address descriptor with flag if the addresses are searchable
+func (p *NixParser) GetAddressesFromAddrDesc(addrDesc bchain.AddressDescriptor) ([]string, bool, error) {
+   return p.OutputScriptToAddressesFunc(addrDesc)
 }
 
 // addressToOutputScript converts address to ScriptPubKey
