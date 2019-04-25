@@ -211,8 +211,7 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
       log.Print("Is Lease Proof Of Stake")
       log.Print(script)
       //script = script[26: 49 + 1]
-      script = script[0:1]
-      script = script[22:73]
+      script = script[2:24]
       log.Print(script)
    }
    if isLeaseProofOfStakeScriptBech32(script) {
