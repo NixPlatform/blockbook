@@ -8,8 +8,6 @@ import (
    "encoding/hex"
    "encoding/json"
    "io"
-   "log"
-   "log/syslog"
    "math/big"
 
    "github.com/golang/glog"
@@ -97,12 +95,6 @@ func (p *NixParser) GetAddressesFromAddrDesc(addrDesc bchain.AddressDescriptor) 
 
 // addressToOutputScript converts address to ScriptPubKey
 func (p *NixParser) addressToOutputScript(address string) ([]byte, error) {
-   //logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-   //if e == nil {
-   //   log.SetOutput(logwriter)
-   //}
-   //log.Print(address)
-   //log.Print(p.Params)
    da, err := btcutil.DecodeAddress(address, p.Params)
    if err != nil {
       return nil, err
@@ -194,57 +186,28 @@ func (p *NixParser) ParseTxFromJson(msg json.RawMessage) (*bchain.Tx, error) {
 }
 
 func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, error) {
-   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-   if e == nil {
-      log.SetOutput(logwriter)
-   }
-   log.Print("=======outoutScriptToAddress=========")
    if isZeroCoinSpendScript(script) {
-      log.Print("Is ZeroCoin Spend")
       return []string{ZCSPEND_LABEL}, false, nil
    }
    if isZeroCoinMintScript(script) {
-      log.Print("Is ZeroCoin Mint")
       return []string{ZCMINT_LABEL}, false, nil
    }
    if isLeaseProofOfStakeScript(script) {
-      log.Print("Is Lease Proof Of Stake")
-      log.Print(script)
-      //script = script[26: 49 + 1]
-      //script = script[2:25]
       script = script[26:49]
-      log.Print(script)
       rv, s, _ := p.NixOutputScriptToAddresses(script)
-      log.Print(rv)
-      log.Print(s)
       return rv, s, nil
    }
    if isLeaseProofOfStakeScriptBech32(script) {
-      log.Print("Is Lease Proof Of Stake Bech32")
-      log.Print(script)
-      script = script[25:47]
-      log.Print(script)
       rv, s, _ := p.NixOutputScriptToAddresses(script)
-      log.Print(rv)
-      log.Print(s)
       return rv, s, nil
    }
 
    rv, s, _ := p.NixOutputScriptToAddresses(script)
-   log.Print(rv)
-   log.Print(s)
-   log.Print("------- END ----------")
    return rv, s, nil
 }
 
 // GetAddrDescFromAddress returns internal address representation (descriptor) of given address
 func (p *NixParser) GetAddrDescFromAddress(address string) (bchain.AddressDescriptor, error) {
-
-   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-   if e == nil {
-      log.SetOutput(logwriter)
-   }
-   //log.Print(p.addressToOutputScript(address))
    return p.addressToOutputScript(address)
 }
 
@@ -323,22 +286,10 @@ func isZeroCoinSpendScript(signatureScript []byte) bool {
 
 // Checks if script is p2sh lpos contract
 func isLeaseProofOfStakeScript(signatureScript []byte) bool {
-   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-   if e == nil {
-      log.SetOutput(logwriter)
-   }
-   log.Print(signatureScript[0])
-   log.Print(signatureScript[2])
    return signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_HASH160
 }
 
 // Checks if script bech32 lpos contract
 func isLeaseProofOfStakeScriptBech32(signatureScript []byte) bool {
-   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-   if e == nil {
-      log.SetOutput(logwriter)
-   }
-   log.Print(signatureScript[0])
-   log.Print(signatureScript[2])
    return signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_0
 }
