@@ -201,10 +201,22 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
       return []string{ZCMINT_LABEL}, false, nil
    }
    if isLeaseProofOfStakeScript(script) {
+      logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+      if e == nil {
+         log.SetOutput(logwriter)
+      }
+      log.Print("Is Lease Proof Of Stake")
       script = script[26: 49 + 1]
+      log.Print(script)
    }
    if isLeaseProofOfStakeScriptBech32(script) {
+      logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+      if e == nil {
+         log.SetOutput(logwriter)
+      }
+      log.Print("Is Lease Proof Of Stake Bech32")
       script = script[25:47 + 1]
+      log.Print(script)
    }
 
    rv, s, _ := p.NixOutputScriptToAddresses(script)
