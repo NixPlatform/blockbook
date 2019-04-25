@@ -28,11 +28,11 @@ const (
    ZERO_INPUT = "0000000000000000000000000000000000000000000000000000000000000000"
 
    // Zerocoin op codes
-   OP_ZEROCOINMINT  = 0xc1
-   OP_ZEROCOINSPEND  = 0xc2
-   OP_COINSTAKE = 0xb8
-   OP_HASH160 = 0xa9
-   OP_0 = 0x00
+   OP_ZEROCOINMINT  = 193
+   OP_ZEROCOINSPEND  = 194
+   OP_COINSTAKE = 184
+   OP_HASH160 = 169
+   OP_0 = 0
 
    // Number of blocks per budget cycle
    nBlocksPerPeriod = 43200
