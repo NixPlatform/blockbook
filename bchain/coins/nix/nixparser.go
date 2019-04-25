@@ -194,32 +194,36 @@ func (p *NixParser) ParseTxFromJson(msg json.RawMessage) (*bchain.Tx, error) {
 }
 
 func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, error) {
+   logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+   if e == nil {
+      log.SetOutput(logwriter)
+   }
+   log.Print("=======outoutScriptToAddress=========")
    if isZeroCoinSpendScript(script) {
+      log.Print("Is ZeroCoin Spend")
       return []string{ZCSPEND_LABEL}, false, nil
    }
    if isZeroCoinMintScript(script) {
+      log.Print("Is ZeroCoin Mint")
       return []string{ZCMINT_LABEL}, false, nil
    }
    if isLeaseProofOfStakeScript(script) {
-      logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-      if e == nil {
-         log.SetOutput(logwriter)
-      }
       log.Print("Is Lease Proof Of Stake")
+      log.Print(script)
       script = script[26: 49 + 1]
       log.Print(script)
    }
    if isLeaseProofOfStakeScriptBech32(script) {
-      logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
-      if e == nil {
-         log.SetOutput(logwriter)
-      }
       log.Print("Is Lease Proof Of Stake Bech32")
+      log.Print(script)
       script = script[25:47 + 1]
       log.Print(script)
    }
 
    rv, s, _ := p.NixOutputScriptToAddresses(script)
+   log.Print(rv)
+   log.Print(s)
+   log.Print("------- END ----------")
    return rv, s, nil
 }
 
