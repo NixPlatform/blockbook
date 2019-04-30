@@ -23,9 +23,9 @@
     "package_revision": "satoshilabs-1",
     "system_user": "nix",
     "version": "2.0.3.3",
-    "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v2.3.0.3/nix-2.3.0-x86_64-linux-gnu.tar.gz",
+    "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v2.3.0.5/nix-2.3.0-x86_64-linux-gnu.tar.gz",
     "verification_type": "sha256",
-    "verification_source": "76ddf4d10fe123b1df740f7c35255529e7cc370e15b90aa3cc0fff2e4c794a63",
+    "verification_source": "adcff2addfdeadb9da31d32fe011668b4a13947725fb5eda983a495c1792ade5",
     "extract_command": "tar -C backend --strip 1 -xf",
     "exclude_files": [
         "bin/nix-qt",
