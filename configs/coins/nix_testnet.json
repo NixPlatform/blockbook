@@ -22,7 +22,7 @@
     "package_name": "backend-nix-testnet",
     "package_revision": "satoshilabs-1",
     "system_user": "nix",
-    "version": "2.0.3.3",
+    "version": "2.0.3.5",
     "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v2.3.0.3/nix-2.3.0-x86_64-linux-gnu.tar.gz",
     "verification_type": "sha256",
     "verification_source": "76ddf4d10fe123b1df740f7c35255529e7cc370e15b90aa3cc0fff2e4c794a63",
