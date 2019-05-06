@@ -28,6 +28,8 @@ const (
    // Zerocoin op codes
    OP_ZEROCOINMINT  = 193
    OP_ZEROCOINSPEND  = 194
+   OP_SIGMAMINT  = 195
+   OP_SIGMASPEND  = 196
    OP_COINSTAKE = 184
    OP_HASH160 = 169
    OP_0 = 0
@@ -38,6 +40,8 @@ const (
    // Labels
    ZCMINT_LABEL = "Zerocoin Mint"
    ZCSPEND_LABEL = "Zerocoin Spend"
+   SIGMAMINT_LABEL = "Sigma Mint"
+   SIGMASPEND_LABEL = "Sigma Spend"
 )
 
 var (
@@ -192,6 +196,12 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
    if isZeroCoinMintScript(script) {
       return []string{ZCMINT_LABEL}, false, nil
    }
+   if isSigmaSpendScript(script) {
+      return []string{SIGMASPEND_LABEL}, false, nil
+   }
+   if isSigmaMintScript(script) {
+      return []string{SIGMAMINT_LABEL}, false, nil
+   }
    if isLeaseProofOfStakeScript(script) {
       script = script[26:49]
       rv, s, _ := p.NixOutputScriptToAddresses(script)
@@ -292,4 +302,14 @@ func isLeaseProofOfStakeScript(signatureScript []byte) bool {
 // Checks if script bech32 lpos contract
 func isLeaseProofOfStakeScriptBech32(signatureScript []byte) bool {
    return signatureScript[0] == OP_COINSTAKE && signatureScript[2] == OP_0
+}
+
+// Checks if script is OP_SIGMAMINT
+func isSigmaMintScript(signatureScript []byte) bool {
+   return len(signatureScript) >= 1 && signatureScript[0] == OP_SIGMAMINT
+}
+
+// Checks if script is OP_SIGMASPEND
+func isSigmaSpendScript(signatureScript []byte) bool {
+   return len(signatureScript) >= 1 && signatureScript[0] == OP_SIGMASPEND
 }
