@@ -22,24 +22,24 @@
     "package_name": "backend-nix-testnet",
     "package_revision": "satoshilabs-1",
     "system_user": "nix",
-    "version": "2.0.3.5",
-    "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v2.3.0.3/nix-2.3.0-x86_64-linux-gnu.tar.gz",
+    "version": "3.0.0",
+    "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v3.0.0rc1/nix-3.0.0-x86_64-linux-gnu.tar.gz",
     "verification_type": "sha256",
-    "verification_source": "76ddf4d10fe123b1df740f7c35255529e7cc370e15b90aa3cc0fff2e4c794a63",
+    "verification_source": "5fa408dd8b3ecc263d880f234d5b02b9513751c1886fd9e297c9a3d519b5859f",
     "extract_command": "tar -C backend --strip 1 -xf",
     "exclude_files": [
         "bin/nix-qt",
         "bin/nix-tx"
     ],
-    "exec_command_template": "{{.Env.BackendInstallPath}}/{{.Coin.Alias}}/zcoind -datadir={{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend -conf={{.Env.BackendInstallPath}}/{{.Coin.Alias}}/{{.Coin.Alias}}.conf -pid=/run/{{.Coin.Alias}}/{{.Coin.Alias}}.pid",
+    "exec_command_template": "{{.Env.BackendInstallPath}}/{{.Coin.Alias}}/bin/nixd -datadir={{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend -conf={{.Env.BackendInstallPath}}/{{.Coin.Alias}}/{{.Coin.Alias}}.conf -pid=/run/{{.Coin.Alias}}/{{.Coin.Alias}}.pid",
     "logrotate_files_template": "{{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend/testnet4/*.log",
     "postinst_script_template": "",
     "service_type": "forking",
     "service_additional_params_template": "",
     "protect_memory": true,
     "mainnet": false,
-    "server_config_file": "nix.conf",
-    "client_config_file": "nix_client.conf",
+    "server_config_file": "bitcoin_like.conf",
+    "client_config_file": "bitcoin_like_client.conf",
     "additional_params": {
       "whitelist": "127.0.0.1"
     }
