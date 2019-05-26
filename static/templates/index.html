@@ -1,14 +1,59 @@
-{{define "specific"}}{{$cs := .CoinShortcut}}{{$bb := .Info.Blockbook}}{{$be := .Info.Backend}}
-<h1>Application status</h1>
+{{define "specific"}}{{$cs := .CoinShortcut}}{{$bb := .Info.Blockbook}}{{$be := .Info.Backend}}{{$blocks := .Blocks}}
+<h1>NIX Block Explorer</h1>
+
+{{if .InternalExplorer}}
+<div class="row">
+    <div class="col-md-12">
+        <form id="search" action="/search" method="get">
+            <input name="q" type="text" class="form-control" placeholder="Search for block, transaction, address or xpub" focus="true">
+        </form>
+    </div>
+</div>
+{{end}}
+
 {{- if $bb.InitialSync -}}
 <h3 class="bg-danger text-white" style="padding: 20px;">Application is now in initial synchronization and does not provide any data.</h3>
 {{- end -}}
 {{- if not $bb.SyncMode -}}
 <h3 class="bg-warning text-white" style="padding: 20px;">Synchronization with backend is disabled, the state of index is not up to date.</h3>
 {{- end -}}
+
+{{if .InternalExplorer}}
+<div class="row">
+    <div class="col-md-12">
+        <h3>Latest 10 blocks</h3>
+        <div class="data-div">
+            <table class="table table-striped data-table table-hover">
+                <thead>
+                <tr>
+                    <th style="width: 10%;">Height</th>
+                    <th style="width: 48%;">Hash</th>
+                    <th>Timestamp</span></th>
+                    <th class="text-right" style="width: 10%;">Transactions</th>
+                    <th class="text-right" style="width: 10%;">Size</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{- range $b := $blocks.Blocks -}}
+                    <tr>
+                        <td><a href="/block/{{$b.Height}}">{{$b.Height}}</a></td>
+                        <td class="ellipsis">{{$b.Hash}}</td>
+                        <td>{{formatUnixTime $b.Time}}</td>
+                        <td class="text-right">{{$b.Txs}}</td>
+                        <td class="text-right">{{$b.Size}}</td>
+                    </tr>
+                {{- end -}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{end}}
+
 <div class="row">
     <div class="col-md-6">
-        <h3>Blockbook</h3>
+        <h3>Explorer</h3>
+
         <table class="table data-table">
             <tbody>
                 <tr>
@@ -20,8 +65,8 @@
                     <td class="data">{{$bb.Host}}</td>
                 </tr>
                 <tr>
-                    <td>Version / Commit / Build</td>
-                    <td class="data">{{$bb.Version}} / <a href="https://github.com/trezor/blockbook/commit/{{$bb.GitCommit}}" target="_blank" rel="noopener noreferrer">{{$bb.GitCommit}}</a> / {{$bb.BuildTime}}</td>
+                    <td>Version</td>
+                    <td class="data">{{$bb.Version}}</td>
                 </tr>
                 <tr>
                     <td>Synchronized</td>
@@ -104,5 +149,4 @@
         </table>
     </div>
 </div>
-<span class="text-muted">{{$bb.About}}</span>
 {{end}}

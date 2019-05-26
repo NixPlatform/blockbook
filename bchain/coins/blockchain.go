@@ -20,6 +20,7 @@ import (
 	"blockbook/bchain/coins/monacoin"
 	"blockbook/bchain/coins/myriad"
 	"blockbook/bchain/coins/namecoin"
+	"blockbook/bchain/coins/nix"
 	"blockbook/bchain/coins/nuls"
 	"blockbook/bchain/coins/pivx"
 	"blockbook/bchain/coins/polis"
@@ -67,6 +68,8 @@ func init() {
 	BlockChainFactories["Vertcoin"] = vertcoin.NewVertcoinRPC
 	BlockChainFactories["Vertcoin Testnet"] = vertcoin.NewVertcoinRPC
 	BlockChainFactories["Namecoin"] = namecoin.NewNamecoinRPC
+	BlockChainFactories["NIX"] = nix.NewNixRPC
+	BlockChainFactories["NIX Testnet"] = nix.NewNixRPC
 	BlockChainFactories["Monacoin"] = monacoin.NewMonacoinRPC
 	BlockChainFactories["Monacoin Testnet"] = monacoin.NewMonacoinRPC
 	BlockChainFactories["DigiByte"] = digibyte.NewDigiByteRPC

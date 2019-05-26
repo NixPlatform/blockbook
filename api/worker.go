@@ -8,6 +8,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	//"log"
+	//"log/syslog"
 	"math/big"
 	"strconv"
 	"time"
@@ -647,6 +649,11 @@ func (w *Worker) getAddrDescAndNormalizeAddress(address string) (bchain.AddressD
 
 // GetAddress computes address value and gets transactions for given address
 func (w *Worker) GetAddress(address string, page int, txsOnPage int, option AccountDetails, filter *AddressFilter) (*Address, error) {
+	//logwriter, e := syslog.New(syslog.LOG_NOTICE, "blockbook")
+	//if e == nil {
+	//	log.SetOutput(logwriter)
+	//}
+	//log.Print(address)
 	start := time.Now()
 	page--
 	if page < 0 {
@@ -669,8 +676,10 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 	)
 	addrDesc, address, err := w.getAddrDescAndNormalizeAddress(address)
 	if err != nil {
+		//log.Print(err)
 		return nil, err
 	}
+	//log.Print(addrDesc)
 	if w.chainType == bchain.ChainEthereumType {
 		var n uint64
 		ba, tokens, erc20c, n, nonTokenTxs, totalResults, err = w.getEthereumTypeAddressBalances(addrDesc, option, filter)

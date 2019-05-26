@@ -737,14 +737,19 @@ func (s *PublicServer) explorerBlock(w http.ResponseWriter, r *http.Request) (tp
 }
 
 func (s *PublicServer) explorerIndex(w http.ResponseWriter, r *http.Request) (tpl, *TemplateData, error) {
+	var blocks *api.Blocks
 	var si *api.SystemInfo
 	var err error
+
 	s.metrics.ExplorerViews.With(common.Labels{"action": "index"}).Inc()
 	si, err = s.api.GetSystemInfo(false)
+	blocks, err = s.api.GetBlocks(0, 10)
 	if err != nil {
 		return errorTpl, nil, err
 	}
+
 	data := s.newTemplateData()
+	data.Blocks = blocks
 	data.Info = si
 	return indexTpl, data, nil
 }
@@ -1106,4 +1111,16 @@ func (s *PublicServer) apiEstimateFee(r *http.Request, apiVersion int) (interfac
 		}
 	}
 	return nil, api.NewAPIError("Missing parameter 'number of blocks'", true)
+}
+
+// returns the amount of tokens on a given zerocoin denom
+func formatDenom(d bchain.ZCsupply) string {
+	val, _ := d.Amount.Float64()
+	coins := val / 1e8
+	den, err := strconv.Atoi(d.Denom)
+	if err != nil {
+		return ""
+	}
+	coins = coins / float64(den)
+	return fmt.Sprintf("%.0f", coins)
 }

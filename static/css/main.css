@@ -36,15 +36,15 @@ h3 {
 }
 
 .navbar-form .form-control {
-    background-color: gray;
+    background-color: #383838;
     color: #fff;
     border-radius: 3px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border: 0;
-    -webkit-box-shadow: 1px 1px 0 0 rgba(255, 255, 255, .41), inset 1px 1px 3px 0 rgba(0, 0, 0, .10);
-    -moz-box-shadow: 1px 1px 0 0 rgba(255, 255, 255, .41), inset 1px 1px 3px 0 rgba(0, 0, 0, .10);
-    box-shadow: 1px 1px 0 0 rgba(255, 255, 255, .41), inset 1px 1px 3px 0 rgba(0, 0, 0, .10);
+    -webkit-box-shadow: 1px 1px 0 0 rgba(255, 255, 255, .11), inset 1px 1px 3px 0 rgba(0, 0, 0, .10);
+    -moz-box-shadow: 1px 1px 0 0 rgba(255, 255, 255, .11), inset 1px 1px 3px 0 rgba(0, 0, 0, .10);
+    box-shadow: 1px 1px 0 0 rgba(255, 255, 255, .11), inset 1px 1px 3px 0 rgba(0, 0, 0, .10);
 }
 
 @media (min-width: 768px) {
@@ -92,12 +92,12 @@ h3 {
     margin: 0;
     padding-bottom: 0;
     padding-top: 0;
-    background-color: #212121;
+    background-color: #2f2950;
     border: 0;
 }
 
 .bg-trezor {
-    background-color: #212121!important;
+    background-color: #2f2950!important;
     height: 53px;
 }
 
@@ -120,7 +120,7 @@ h3 {
 }
 
 #footer {
-    background-color: #212121;
+    background-color: #2f2950;
     color: #fff;
     height: 53px;
     overflow: hidden;

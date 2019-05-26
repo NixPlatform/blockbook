@@ -156,7 +156,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Transaction</h1>`,
 				`<span class="data">fdd824a780cbb718eeb766eb05d83fdefc793a27082cd5e67f856d69798cf7db</span>`,
 				`td class="data">0 FAKE</td>`,
@@ -172,7 +171,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Address`,
 				`<small class="text-muted">0 FAKE</small>`,
 				`<span class="data">mtGXQvBowMkBpnhLckhxhbwYK44Gs9eEtz</span>`,
@@ -192,7 +190,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Transaction</h1>`,
 				`<span class="data">3d90d15ed026dc45e19ffb52875ed18fa9e8012ad123d7f7212176e2b0ebdb71</span>`,
 				`<td class="data">0.00000062 FAKE</td>`,
@@ -205,7 +202,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Error</h1>`,
 				`<h4>Transaction not found</h4>`,
 				`</html>`,
@@ -217,7 +213,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Blocks`,
 				`<td><a href="/block/225494">225494</a></td>`,
 				`<td class="ellipsis">00000000eb0443fd7dc4a1ed5c686a8e995057805f9a161d9a5a77a95e72b7b6</td>`,
@@ -233,7 +228,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Block 225494</h1>`,
 				`<span class="data">00000000eb0443fd7dc4a1ed5c686a8e995057805f9a161d9a5a77a95e72b7b6</span>`,
 				`<td class="data">4</td>`, // number of transactions
@@ -249,8 +243,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
-				`<h1>Application status</h1>`,
 				`<h3 class="bg-warning text-white" style="padding: 20px;">Synchronization with backend is disabled, the state of index is not up to date.</h3>`,
 				`<a href="/block/225494">225494</a>`,
 				`<td class="data">/Fakecoin:0.0.1/</td>`,
@@ -263,7 +255,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Block 225494</h1>`,
 				`<span class="data">00000000eb0443fd7dc4a1ed5c686a8e995057805f9a161d9a5a77a95e72b7b6</span>`,
 				`<td class="data">4</td>`, // number of transactions
@@ -279,7 +270,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Block 225494</h1>`,
 				`<span class="data">00000000eb0443fd7dc4a1ed5c686a8e995057805f9a161d9a5a77a95e72b7b6</span>`,
 				`<td class="data">4</td>`, // number of transactions
@@ -295,7 +285,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Transaction</h1>`,
 				`<span class="data">fdd824a780cbb718eeb766eb05d83fdefc793a27082cd5e67f856d69798cf7db</span>`,
 				`td class="data">0 FAKE</td>`,
@@ -311,7 +300,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Address`,
 				`<small class="text-muted">0 FAKE</small>`,
 				`<span class="data">mtGXQvBowMkBpnhLckhxhbwYK44Gs9eEtz</span>`,
@@ -331,7 +319,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>XPUB <small class="text-muted">1186.419755 FAKE</small></h1><div class="alert alert-data ellipsis"><span class="data">upub5E1xjDmZ7Hhej6LPpS8duATdKXnRYui7bDYj6ehfFGzWDZtmCmQkZhc3Zb7kgRLtHWd16QFxyP86JKL3ShZEBFX88aciJ3xyocuyhZZ8g6q</span></div>`,
 				`<td style="width: 25%;">Total Received</td><td class="data">1186.41975501 FAKE</td>`,
 				`<td>Total Sent</td><td class="data">0.00000001 FAKE</td>`,
@@ -349,7 +336,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Error</h1>`,
 				`<h4>No matching records found for &#39;1234&#39;</h4>`,
 				`</html>`,
@@ -361,7 +347,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Send Raw Transaction</h1>`,
 				`<textarea class="form-control" rows="8" name="hex"></textarea>`,
 				`</html>`,
@@ -373,7 +358,6 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "text/html; charset=utf-8",
 			body: []string{
-				`<a href="/" class="nav-link">Fake Coin Explorer</a>`,
 				`<h1>Send Raw Transaction</h1>`,
 				`<textarea class="form-control" rows="8" name="hex">12341234</textarea>`,
 				`<div class="alert alert-danger">Invalid data</div>`,
@@ -633,7 +617,7 @@ func httpTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 			status:      http.StatusOK,
 			contentType: "application/json; charset=utf-8",
 			body: []string{
-				`{"page":1,"totalPages":1,"itemsOnPage":1000,"hash":"0000000076fbbed90fd75b0e18856aa35baa984e9c9d444cf746ad85e94e2997","previousblockhash":"","nextblockhash":"00000000eb0443fd7dc4a1ed5c686a8e995057805f9a161d9a5a77a95e72b7b6","height":225493,"confirmations":2,"size":1234567,"time":1534858021,"version":0,"merkleroot":"","nonce":"","bits":"","difficulty":"","txCount":2,"txs":[{"txid":"00b2c06055e5e90e9c82bd4181fde310104391a7fa4f289b1704e5d90caa3840","vin":[],"vout":[{"value":"100000000","n":0,"addresses":["mfcWp7DB6NuaZsExybTTXpVgWz559Np4Ti"]},{"value":"12345","n":1,"spent":true,"addresses":["mtGXQvBowMkBpnhLckhxhbwYK44Gs9eEtz"]}],"blockhash":"0000000076fbbed90fd75b0e18856aa35baa984e9c9d444cf746ad85e94e2997","blockheight":225493,"confirmations":2,"blocktime":1534858021,"value":"100012345","valueIn":"0","fees":"0"},{"txid":"effd9ef509383d536b1c8af5bf434c8efbf521a4f2befd4022bbd68694b4ac75","vin":[],"vout":[{"value":"1234567890123","n":0,"spent":true,"addresses":["mv9uLThosiEnGRbVPS7Vhyw6VssbVRsiAw"]},{"value":"1","n":1,"spent":true,"addresses":["2MzmAKayJmja784jyHvRUW1bXPget1csRRG"]},{"value":"9876","n":2,"spent":true,"addresses":["2NEVv9LJmAnY99W1pFoc5UJjVdypBqdnvu1"]}],"blockhash":"0000000076fbbed90fd75b0e18856aa35baa984e9c9d444cf746ad85e94e2997","blockheight":225493,"confirmations":2,"blocktime":1534858021,"value":"1234567900000","valueIn":"0","fees":"0"}]}`,
+				`{"page":1,"totalPages":1,"itemsOnPage":1000,"hash":"0000000076fbbed90fd75b0e18856aa35baa984e9c9d444cf746ad85e94e2997","previousblockhash":"","nextblockhash":"00000000eb0443fd7dc4a1ed5c686a8e995057805f9a161d9a5a77a95e72b7b6","height":225493,"confirmations":2,"size":1234567,"time":1534858021,"moneysupply":0,"Type":0,"version":0,"merkleroot":"","nonce":"","bits":"","difficulty":"","txCount":2,"txs":[{"txid":"00b2c06055e5e90e9c82bd4181fde310104391a7fa4f289b1704e5d90caa3840","vin":[],"vout":[{"value":"100000000","n":0,"addresses":["mfcWp7DB6NuaZsExybTTXpVgWz559Np4Ti"]},{"value":"12345","n":1,"spent":true,"addresses":["mtGXQvBowMkBpnhLckhxhbwYK44Gs9eEtz"]}],"blockhash":"0000000076fbbed90fd75b0e18856aa35baa984e9c9d444cf746ad85e94e2997","blockheight":225493,"confirmations":2,"blocktime":1534858021,"value":"100012345","valueIn":"0","fees":"0"},{"txid":"effd9ef509383d536b1c8af5bf434c8efbf521a4f2befd4022bbd68694b4ac75","vin":[],"vout":[{"value":"1234567890123","n":0,"spent":true,"addresses":["mv9uLThosiEnGRbVPS7Vhyw6VssbVRsiAw"]},{"value":"1","n":1,"spent":true,"addresses":["2MzmAKayJmja784jyHvRUW1bXPget1csRRG"]},{"value":"9876","n":2,"spent":true,"addresses":["2NEVv9LJmAnY99W1pFoc5UJjVdypBqdnvu1"]}],"blockhash":"0000000076fbbed90fd75b0e18856aa35baa984e9c9d444cf746ad85e94e2997","blockheight":225493,"confirmations":2,"blocktime":1534858021,"value":"1234567900000","valueIn":"0","fees":"0"}]}`,
 			},
 		},
 	}
@@ -687,7 +671,7 @@ func socketioTests_BitcoinType(t *testing.T, ts *httptest.Server) {
 		{
 			name: "getInfo",
 			req:  socketioReq{"getInfo", []interface{}{}},
-			want: `{"result":{"blocks":225494,"testnet":true,"network":"fakecoin","subversion":"/Fakecoin:0.0.1/","coin_name":"Fakecoin","about":"Blockbook - blockchain indexer for TREZOR wallet https://trezor.io/. Do not use for any other purpose."}}`,
+			want: `{"result":{"blocks":225494,"testnet":true,"network":"fakecoin","subversion":"/Fakecoin:0.0.1/","coin_name":"Fakecoin","about":"NIX Explorer"}}`,
 		},
 		{
 			name: "estimateFee",
