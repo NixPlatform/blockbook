@@ -25,7 +25,7 @@
     "version": "3.0.1",
     "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v3.0.1/nix-3.0.1-x86_64-linux-gnu.tar.gz",
     "verification_type": "sha256",
-    "verification_source": "998e631b5f449f2733dcfedd5b6cf915d8ca0dee111e26069ed0739751a69753",
+    "verification_source": "5c9a1b3c472477e9eebc7e0f507af2eb4b81934187b595863e8b23fcbb817066",
     "extract_command": "tar -C backend --strip 1 -xf",
     "exclude_files": [
         "bin/nix-qt",
