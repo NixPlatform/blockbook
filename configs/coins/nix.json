@@ -22,10 +22,10 @@
     "package_name": "backend-nix",
     "package_revision": "satoshilabs-1",
     "system_user": "nix",
-    "version": "3.0.0",
-    "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v3.0.0/nix-3.0.0-x86_64-linux-gnu.tar.gz",
+    "version": "3.0.4",
+    "binary_url": "https://github.com/NixPlatform/NixCore/releases/download/v3.0.4/nix-3.0.4-x86_64-linux-gnu.tar.gz",
     "verification_type": "sha256",
-    "verification_source": "5ec34a69e5978a4b4db2c53bd0e94b6b45db31d7eed7708ed7dcd4d5e5156033",
+    "verification_source": "904585d5b00e1a7780d0d36b3de2212445fac8b2f22a650a0ce169e827a6b4b1",
     "extract_command": "tar -C backend --strip 1 -xf",
     "exclude_files": [
         "bin/nix-qt",
