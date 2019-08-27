@@ -208,6 +208,7 @@ func (p *NixParser) outputScriptToAddresses(script []byte) ([]string, bool, erro
       return rv, s, nil
    }
    if isLeaseProofOfStakeScriptBech32(script) {
+      script = script[25:47]
       rv, s, _ := p.NixOutputScriptToAddresses(script)
       return rv, s, nil
    }
