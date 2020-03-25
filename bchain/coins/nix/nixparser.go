@@ -92,6 +92,24 @@ func NewNixParser(params *chaincfg.Params, c *btc.Configuration) *NixParser {
    //return &NixParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
 }
 
+// GetAddrDescFromVout returns internal address representation (descriptor) of given transaction output
+func (p *NixParser) GetAddrDescFromVout(output *bchain.Vout) (bchain.AddressDescriptor, error) {
+	ad, err := hex.DecodeString(output.ScriptPubKey.Hex)
+	if err != nil {
+		return ad, err
+	}
+
+  if isLeaseProofOfStakeScript(ad) {
+     ad = ad[26:49]
+  }
+  if isLeaseProofOfStakeScriptBech32(ad) {
+     ad = ad[25:47]
+  }
+	// convert possible P2PK script to P2PKH
+	// so that all transactions by given public key are indexed together
+	return txscript.ConvertP2PKtoP2PKH(ad)
+}
+
 // GetAddressesFromAddrDesc returns addresses for given address descriptor with flag if the addresses are searchable
 func (p *NixParser) GetAddressesFromAddrDesc(addrDesc bchain.AddressDescriptor) ([]string, bool, error) {
    return p.OutputScriptToAddressesFunc(addrDesc)

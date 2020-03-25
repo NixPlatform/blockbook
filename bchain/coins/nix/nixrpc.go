@@ -161,7 +161,7 @@ type ResGetNetworkInfo struct {
 	Error  *bchain.RPCError `json:"error"`
 	Result struct {
 		Version         json.Number `json:"version"`
-		Subversion      json.Number `json:"subversion"`
+		Subversion      string		 	`json:"subversion"`
 		ProtocolVersion json.Number `json:"protocolversion"`
 		Timeoffset      float64     `json:"timeoffset"`
 		Warnings        string      `json:"warnings"`
