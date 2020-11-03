@@ -1,4 +1,4 @@
-module github.com/trezor/blockbook
+module github.com/nixplatform/blockbook
 
 go 1.13
 
