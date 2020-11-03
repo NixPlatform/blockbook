@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+
+	"github.com/trezor/blockbook/common"
 )
 
 // ChainType is type of the blockchain
@@ -47,7 +49,7 @@ type ScriptSig struct {
 	Hex string `json:"hex"`
 }
 
-// Vin contains data about tx output
+// Vin contains data about tx input
 type Vin struct {
 	Coinbase  string    `json:"coinbase"`
 	Txid      string    `json:"txid"`
@@ -68,26 +70,48 @@ type ScriptPubKey struct {
 // Vout contains data about tx output
 type Vout struct {
 	ValueSat     big.Int
-	JsonValue    json.Number  `json:"value"`
-	N            uint32       `json:"n"`
-	ScriptPubKey ScriptPubKey `json:"scriptPubKey"`
+	JsonValue    common.JSONNumber `json:"value"`
+	N            uint32            `json:"n"`
+	ScriptPubKey ScriptPubKey      `json:"scriptPubKey"`
 	Type         string       `json:"type,omitempty"`
 }
 
 // Tx is blockchain transaction
 // unnecessary fields are commented out to avoid overhead
 type Tx struct {
-	Hex      string `json:"hex"`
-	Txid     string `json:"txid"`
-	Version  int32  `json:"version"`
-	LockTime uint32 `json:"locktime"`
-	Vin      []Vin  `json:"vin"`
-	Vout     []Vout `json:"vout"`
+	Hex         string `json:"hex"`
+	Txid        string `json:"txid"`
+	Version     int32  `json:"version"`
+	LockTime    uint32 `json:"locktime"`
+	Vin         []Vin  `json:"vin"`
+	Vout        []Vout `json:"vout"`
+	BlockHeight uint32 `json:"blockHeight,omitempty"`
 	// BlockHash     string `json:"blockhash,omitempty"`
 	Confirmations    uint32      `json:"confirmations,omitempty"`
 	Time             int64       `json:"time,omitempty"`
 	Blocktime        int64       `json:"blocktime,omitempty"`
 	CoinSpecificData interface{} `json:"-"`
+}
+
+// MempoolVin contains data about tx input
+type MempoolVin struct {
+	Vin
+	AddrDesc AddressDescriptor `json:"-"`
+	ValueSat big.Int
+}
+
+// MempoolTx is blockchain transaction in mempool
+// optimized for onNewTx notification
+type MempoolTx struct {
+	Hex              string          `json:"hex"`
+	Txid             string          `json:"txid"`
+	Version          int32           `json:"version"`
+	LockTime         uint32          `json:"locktime"`
+	Vin              []MempoolVin    `json:"vin"`
+	Vout             []Vout          `json:"vout"`
+	Blocktime        int64           `json:"blocktime,omitempty"`
+	Erc20            []Erc20Transfer `json:"-"`
+	CoinSpecificData interface{}     `json:"-"`
 }
 
 // Block is block header and list of transactions
@@ -112,12 +136,12 @@ type BlockHeader struct {
 // BlockInfo contains extended block header data and a list of block txids
 type BlockInfo struct {
 	BlockHeader
-	Version    json.Number `json:"version"`
-	MerkleRoot string      `json:"merkleroot"`
-	Nonce      json.Number `json:"nonce"`
-	Bits       string      `json:"bits"`
-	Difficulty json.Number `json:"difficulty"`
-	Txids      []string    `json:"tx,omitempty"`
+	Version    common.JSONNumber `json:"version"`
+	MerkleRoot string            `json:"merkleroot"`
+	Nonce      common.JSONNumber `json:"nonce"`
+	Bits       string            `json:"bits"`
+	Difficulty common.JSONNumber `json:"difficulty"`
+	Txids      []string          `json:"tx,omitempty"`
 	ZerocoinSupply  []ZCsupply    `json:"zerocoinsupply,omitempty"`
 }
 
@@ -125,18 +149,18 @@ type BlockInfo struct {
 type MempoolEntry struct {
 	Size            uint32 `json:"size"`
 	FeeSat          big.Int
-	Fee             json.Number `json:"fee"`
+	Fee             common.JSONNumber `json:"fee"`
 	ModifiedFeeSat  big.Int
-	ModifiedFee     json.Number `json:"modifiedfee"`
-	Time            uint64      `json:"time"`
-	Height          uint32      `json:"height"`
-	DescendantCount uint32      `json:"descendantcount"`
-	DescendantSize  uint32      `json:"descendantsize"`
-	DescendantFees  uint32      `json:"descendantfees"`
-	AncestorCount   uint32      `json:"ancestorcount"`
-	AncestorSize    uint32      `json:"ancestorsize"`
-	AncestorFees    uint32      `json:"ancestorfees"`
-	Depends         []string    `json:"depends"`
+	ModifiedFee     common.JSONNumber `json:"modifiedfee"`
+	Time            uint64            `json:"time"`
+	Height          uint32            `json:"height"`
+	DescendantCount uint32            `json:"descendantcount"`
+	DescendantSize  uint32            `json:"descendantsize"`
+	DescendantFees  uint32            `json:"descendantfees"`
+	AncestorCount   uint32            `json:"ancestorcount"`
+	AncestorSize    uint32            `json:"ancestorsize"`
+	AncestorFees    uint32            `json:"ancestorfees"`
+	Depends         []string          `json:"depends"`
 }
 
 type ZCsupply struct {
@@ -183,6 +207,14 @@ func (ad AddressDescriptor) String() string {
 	return "ad:" + hex.EncodeToString(ad)
 }
 
+// AddressDescriptorFromString converts string created by AddressDescriptor.String to AddressDescriptor
+func AddressDescriptorFromString(s string) (AddressDescriptor, error) {
+	if len(s) > 3 && s[0:3] == "ad:" {
+		return hex.DecodeString(s[3:])
+	}
+	return nil, errors.New("Not AddressDescriptor")
+}
+
 // EthereumType specific
 
 // Erc20Contract contains info about ERC20 contract
@@ -216,8 +248,11 @@ type OnNewBlockFunc func(hash string, height uint32)
 // OnNewTxAddrFunc is used to send notification about a new transaction/address
 type OnNewTxAddrFunc func(tx *Tx, desc AddressDescriptor)
 
-// AddrDescForOutpointFunc defines function that returns address descriptorfor given outpoint or nil if outpoint not found
-type AddrDescForOutpointFunc func(outpoint Outpoint) AddressDescriptor
+// OnNewTxFunc is used to send notification about a new transaction/address
+type OnNewTxFunc func(tx *MempoolTx)
+
+// AddrDescForOutpointFunc returns address descriptor and value for given outpoint or nil if outpoint not found
+type AddrDescForOutpointFunc func(outpoint Outpoint) (AddressDescriptor, *big.Int)
 
 // BlockChain defines common interface to block chain daemon
 type BlockChain interface {
@@ -227,7 +262,7 @@ type BlockChain interface {
 	// create mempool but do not initialize it
 	CreateMempool(BlockChain) (Mempool, error)
 	// initialize mempool, create ZeroMQ (or other) subscription
-	InitializeMempool(AddrDescForOutpointFunc, OnNewTxAddrFunc) error
+	InitializeMempool(AddrDescForOutpointFunc, OnNewTxAddrFunc, OnNewTxFunc) error
 	// shutdown mempool, ZeroMQ and block chain connections
 	Shutdown(ctx context.Context) error
 	// chain info
@@ -270,16 +305,19 @@ type BlockChainParser interface {
 	KeepBlockAddresses() int
 	// AmountDecimals returns number of decimal places in coin amounts
 	AmountDecimals() int
+	// MinimumCoinbaseConfirmations returns minimum number of confirmations a coinbase transaction must have before it can be spent
+	MinimumCoinbaseConfirmations() int
 	// AmountToDecimalString converts amount in big.Int to string with decimal point in the correct place
 	AmountToDecimalString(a *big.Int) string
-	// AmountToBigInt converts amount in json.Number (string) to big.Int
+	// AmountToBigInt converts amount in common.JSONNumber (string) to big.Int
 	// it uses string operations to avoid problems with rounding
-	AmountToBigInt(n json.Number) (big.Int, error)
+	AmountToBigInt(n common.JSONNumber) (big.Int, error)
 	// address descriptor conversions
 	GetAddrDescFromVout(output *Vout) (AddressDescriptor, error)
 	GetAddrDescFromAddress(address string) (AddressDescriptor, error)
 	GetAddressesFromAddrDesc(addrDesc AddressDescriptor) ([]string, bool, error)
 	GetScriptFromAddrDesc(addrDesc AddressDescriptor) ([]byte, error)
+	IsAddrDescIndexable(addrDesc AddressDescriptor) bool
 	// transactions
 	PackedTxidLen() int
 	PackTxid(txid string) ([]byte, error)

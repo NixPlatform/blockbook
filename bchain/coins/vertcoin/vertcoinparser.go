@@ -1,18 +1,19 @@
 package vertcoin
 
 import (
-	"blockbook/bchain/coins/btc"
-
 	"github.com/martinboehm/btcd/wire"
 	"github.com/martinboehm/btcutil/chaincfg"
+	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
+// magic numbers
 const (
 	MainnetMagic wire.BitcoinNet = 0xdab5bffb
 	TestnetMagic wire.BitcoinNet = 0x74726576 // "vert" word
 	RegtestMagic wire.BitcoinNet = 0xdab5bffc
 )
 
+// chain parameters
 var (
 	MainNetParams chaincfg.Params
 	TestNetParams chaincfg.Params

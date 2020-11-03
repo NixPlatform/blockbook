@@ -1,8 +1,6 @@
 package api
 
 import (
-	"blockbook/bchain"
-	"blockbook/db"
 	"fmt"
 	"math/big"
 	"sort"
@@ -11,9 +9,10 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/juju/errors"
+	"github.com/trezor/blockbook/bchain"
+	"github.com/trezor/blockbook/db"
 )
 
-const xpubLen = 111
 const defaultAddressesGap = 20
 const maxAddressesGap = 10000
 
@@ -101,7 +100,7 @@ func (w *Worker) xpubGetAddressTxids(addrDesc bchain.AddressDescriptor, mempool 
 				l = len(txs)
 				callback(m.Txid, 0, []int32{m.Vout})
 				if len(txs) > l {
-					uniqueTxs[m.Txid] = l - 1
+					uniqueTxs[m.Txid] = l
 				}
 			} else {
 				if m.Vout < 0 {
@@ -160,7 +159,7 @@ func (w *Worker) xpubCheckAndLoadTxids(ad *xpubAddress, filter *AddressFilter, m
 
 func (w *Worker) xpubDerivedAddressBalance(data *xpubData, ad *xpubAddress) (bool, error) {
 	var err error
-	if ad.balance, err = w.db.GetAddrDescBalance(ad.addrDesc); err != nil {
+	if ad.balance, err = w.db.GetAddrDescBalance(ad.addrDesc, db.AddressBalanceDetailUTXO); err != nil {
 		return false, err
 	}
 	if ad.balance != nil {
@@ -271,7 +270,7 @@ func evictXpubCacheItems() {
 }
 
 func (w *Worker) getXpubData(xpub string, page int, txsOnPage int, option AccountDetails, filter *AddressFilter, gap int) (*xpubData, uint32, error) {
-	if w.chainType != bchain.ChainBitcoinType || len(xpub) != xpubLen {
+	if w.chainType != bchain.ChainBitcoinType {
 		return nil, 0, ErrUnsupportedXpub
 	}
 	var (
@@ -305,8 +304,7 @@ func (w *Worker) getXpubData(xpub string, page int, txsOnPage int, option Accoun
 			data = xpubData{gap: gap}
 			data.basePath, err = w.chainParser.DerivationBasePath(xpub)
 			if err != nil {
-				glog.Warning("DerivationBasePath error", err)
-				data.basePath = "unknown"
+				return nil, 0, err
 			}
 		} else {
 			hash, err := w.db.GetBlockHash(data.dataHeight)
@@ -495,7 +493,7 @@ func (w *Worker) GetXpubAddress(xpub string, page int, txsOnPage int, option Acc
 			if option == AccountDetailsTxidHistory {
 				txids = append(txids, xpubTxid.txid)
 			} else {
-				tx, err := w.txFromTxid(xpubTxid.txid, bestheight, option)
+				tx, err := w.txFromTxid(xpubTxid.txid, bestheight, option, nil)
 				if err != nil {
 					return nil, err
 				}
@@ -505,7 +503,7 @@ func (w *Worker) GetXpubAddress(xpub string, page int, txsOnPage int, option Acc
 	} else {
 		txCount = int(data.txCountEstimate)
 	}
-	totalTokens := 0
+	usedTokens := 0
 	var tokens []Token
 	var xpubAddresses map[string]struct{}
 	if option > AccountDetailsBasic {
@@ -516,7 +514,7 @@ func (w *Worker) GetXpubAddress(xpub string, page int, txsOnPage int, option Acc
 		for i := range da {
 			ad := &da[i]
 			if ad.balance != nil {
-				totalTokens++
+				usedTokens++
 			}
 			if option > AccountDetailsBasic {
 				token := w.tokenFromXpubAddress(data, ad, ci, i, option)
@@ -542,7 +540,7 @@ func (w *Worker) GetXpubAddress(xpub string, page int, txsOnPage int, option Acc
 		UnconfirmedTxs:        unconfirmedTxs,
 		Transactions:          txs,
 		Txids:                 txids,
-		TotalTokens:           totalTokens,
+		UsedTokens:            usedTokens,
 		Tokens:                tokens,
 		XPubAddresses:         xpubAddresses,
 	}
@@ -589,4 +587,51 @@ func (w *Worker) GetXpubUtxo(xpub string, onlyConfirmed bool, gap int) (Utxos, e
 	sort.Stable(r)
 	glog.Info("GetXpubUtxo ", xpub[:16], ", ", len(r), " utxos, finished in ", time.Since(start))
 	return r, nil
+}
+
+// GetXpubBalanceHistory returns history of balance for given xpub
+func (w *Worker) GetXpubBalanceHistory(xpub string, fromTimestamp, toTimestamp int64, currencies []string, gap int, groupBy uint32) (BalanceHistories, error) {
+	bhs := make(BalanceHistories, 0)
+	start := time.Now()
+	fromUnix, fromHeight, toUnix, toHeight := w.balanceHistoryHeightsFromTo(fromTimestamp, toTimestamp)
+	if fromHeight >= toHeight {
+		return bhs, nil
+	}
+	data, _, err := w.getXpubData(xpub, 0, 1, AccountDetailsTxidHistory, &AddressFilter{
+		Vout:          AddressFilterVoutOff,
+		OnlyConfirmed: true,
+		FromHeight:    fromHeight,
+		ToHeight:      toHeight,
+	}, gap)
+	if err != nil {
+		return nil, err
+	}
+	selfAddrDesc := make(map[string]struct{})
+	for _, da := range [][]xpubAddress{data.addresses, data.changeAddresses} {
+		for i := range da {
+			selfAddrDesc[string(da[i].addrDesc)] = struct{}{}
+		}
+	}
+	for _, da := range [][]xpubAddress{data.addresses, data.changeAddresses} {
+		for i := range da {
+			ad := &da[i]
+			txids := ad.txids
+			for txi := len(txids) - 1; txi >= 0; txi-- {
+				bh, err := w.balanceHistoryForTxid(ad.addrDesc, txids[txi].txid, fromUnix, toUnix, selfAddrDesc)
+				if err != nil {
+					return nil, err
+				}
+				if bh != nil {
+					bhs = append(bhs, *bh)
+				}
+			}
+		}
+	}
+	bha := bhs.SortAndAggregate(groupBy)
+	err = w.setFiatRateToBalanceHistories(bha, currencies)
+	if err != nil {
+		return nil, err
+	}
+	glog.Info("GetUtxoBalanceHistory ", xpub[:16], ", blocks ", fromHeight, "-", toHeight, ", count ", len(bha), ", finished in ", time.Since(start))
+	return bha, nil
 }

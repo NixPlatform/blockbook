@@ -3,13 +3,14 @@
 package sync
 
 import (
-	"blockbook/bchain"
-	"blockbook/db"
 	"math/big"
 	"os"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/trezor/blockbook/bchain"
+	"github.com/trezor/blockbook/db"
 )
 
 func testConnectBlocks(t *testing.T, h *TestHandler) {
@@ -25,10 +26,8 @@ func testConnectBlocks(t *testing.T, h *TestHandler) {
 					close(ch)
 				}
 			}, true)
-			if err != nil {
-				if !strings.HasPrefix(err.Error(), "connectBlocks interrupted at height") {
-					t.Fatal(err)
-				}
+			if err != nil && err != db.ErrOperationInterrupted {
+				t.Fatal(err)
 			}
 
 			height, _, err := d.GetBestBlock()

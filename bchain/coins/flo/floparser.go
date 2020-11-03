@@ -1,18 +1,20 @@
 package flo
 
 import (
-	"blockbook/bchain"
-	"blockbook/bchain/coins/btc"
 	"github.com/martinboehm/btcd/wire"
 	"github.com/martinboehm/btcutil/chaincfg"
+	"github.com/trezor/blockbook/bchain"
+	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
+// magic numbers
 const (
 	MainnetMagic wire.BitcoinNet = 0xf1a5c0fd
 	TestnetMagic wire.BitcoinNet = 0xf25ac0fd
 	RegtestMagic wire.BitcoinNet = 0xdab5bffa
 )
 
+// chain parameters
 var (
 	MainNetParams chaincfg.Params
 	TestNetParams chaincfg.Params

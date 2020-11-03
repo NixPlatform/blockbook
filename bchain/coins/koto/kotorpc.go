@@ -1,18 +1,20 @@
 package koto
 
 import (
-	"blockbook/bchain"
-	"blockbook/bchain/coins/btc"
 	"encoding/json"
 
 	"github.com/golang/glog"
 	"github.com/juju/errors"
+	"github.com/trezor/blockbook/bchain"
+	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
+// KotoRPC is an interface to JSON-RPC bitcoind service
 type KotoRPC struct {
 	*btc.BitcoinRPC
 }
 
+// NewKotoRPC returns new LitecoinRPC instance
 func NewKotoRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)) (bchain.BlockChain, error) {
 	b, err := btc.NewBitcoinRPC(config, pushHandler)
 	if err != nil {

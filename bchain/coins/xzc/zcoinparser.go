@@ -1,8 +1,6 @@
 package xzc
 
 import (
-	"blockbook/bchain"
-	"blockbook/bchain/coins/btc"
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
@@ -11,11 +9,15 @@ import (
 	"github.com/martinboehm/btcd/chaincfg/chainhash"
 	"github.com/martinboehm/btcd/wire"
 	"github.com/martinboehm/btcutil/chaincfg"
+	"github.com/trezor/blockbook/bchain"
+	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
 const (
 	OpZeroCoinMint  = 0xc1
 	OpZeroCoinSpend = 0xc2
+	OpSigmaMint     = 0xc3
+	OpSigmaSpend    = 0xc4
 
 	MainnetMagic wire.BitcoinNet = 0xe3d9fef1
 	TestnetMagic wire.BitcoinNet = 0xcffcbeea
@@ -26,6 +28,8 @@ const (
 	MTPL                   = 64
 
 	SpendTxID = "0000000000000000000000000000000000000000000000000000000000000000"
+
+	TransactionQuorumCommitmentType = 6
 )
 
 var (
@@ -96,12 +100,18 @@ func GetChainParams(chain string) *chaincfg.Params {
 
 // GetAddressesFromAddrDesc returns addresses for given address descriptor with flag if the addresses are searchable
 func (p *ZcoinParser) GetAddressesFromAddrDesc(addrDesc bchain.AddressDescriptor) ([]string, bool, error) {
-	if len(addrDesc) > 0 && addrDesc[0] == OpZeroCoinMint {
-		return []string{"Zeromint"}, false, nil
-	}
 
-	if len(addrDesc) > 0 && addrDesc[0] == OpZeroCoinSpend {
-		return []string{"Zerospend"}, false, nil
+	if len(addrDesc) > 0 {
+		switch addrDesc[0] {
+		case OpZeroCoinMint:
+			return []string{"Zeromint"}, false, nil
+		case OpZeroCoinSpend:
+			return []string{"Zerospend"}, false, nil
+		case OpSigmaMint:
+			return []string{"Sigmamint"}, false, nil
+		case OpSigmaSpend:
+			return []string{"Sigmaspend"}, false, nil
+		}
 	}
 
 	return p.OutputScriptToAddressesFunc(addrDesc)
@@ -115,6 +125,16 @@ func (p *ZcoinParser) PackTx(tx *bchain.Tx, height uint32, blockTime int64) ([]b
 // UnpackTx unpacks transaction from protobuf byte array
 func (p *ZcoinParser) UnpackTx(buf []byte) (*bchain.Tx, uint32, error) {
 	return p.BaseParser.UnpackTx(buf)
+}
+
+// TxFromZcoinMsgTx converts bitcoin wire Tx to bchain.Tx
+func (p *ZcoinParser) TxFromZcoinMsgTx(t *ZcoinMsgTx, parseAddresses bool) bchain.Tx {
+	btx := p.TxFromMsgTx(&t.MsgTx, parseAddresses)
+
+	// NOTE: wire.MsgTx.TxHash() doesn't include extra
+	btx.Txid = t.TxHash().String()
+
+	return btx
 }
 
 // ParseBlock parses raw block to our Block struct
@@ -173,16 +193,37 @@ func (p *ZcoinParser) ParseBlock(b []byte) (*bchain.Block, error) {
 	txs := make([]bchain.Tx, ntx)
 
 	for i := uint64(0); i < ntx; i++ {
-		tx := wire.MsgTx{}
+		tx := ZcoinMsgTx{}
 
-		err := tx.BtcDecode(reader, 0, wire.WitnessEncoding)
-		if err != nil {
+		// read version and seek back
+		var version uint32 = 0
+		if err = binary.Read(reader, binary.LittleEndian, &version); err != nil {
 			return nil, err
 		}
 
-		btx := p.TxFromMsgTx(&tx, false)
+		if _, err = reader.Seek(-4, io.SeekCurrent); err != nil {
+			return nil, err
+		}
 
-		p.parseZcoinTx(&btx)
+		txVersion := version & 0xffff
+		txType := (version >> 16) & 0xffff
+
+		enc := wire.WitnessEncoding
+
+		// transaction quorum commitment could not be parsed with witness flag
+		if txVersion == 3 && txType == TransactionQuorumCommitmentType {
+			enc = wire.BaseEncoding
+		}
+
+		if err = tx.XzcDecode(reader, 0, enc); err != nil {
+			return nil, err
+		}
+
+		btx := p.TxFromZcoinMsgTx(&tx, false)
+
+		if err = p.parseZcoinTx(&btx); err != nil {
+			return nil, err
+		}
 
 		txs[i] = btx
 	}

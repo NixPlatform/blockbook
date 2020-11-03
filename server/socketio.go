@@ -1,10 +1,6 @@
 package server
 
 import (
-	"blockbook/api"
-	"blockbook/bchain"
-	"blockbook/common"
-	"blockbook/db"
 	"encoding/json"
 	"math/big"
 	"net/http"
@@ -17,6 +13,10 @@ import (
 	"github.com/juju/errors"
 	gosocketio "github.com/martinboehm/golang-socketio"
 	"github.com/martinboehm/golang-socketio/transport"
+	"github.com/trezor/blockbook/api"
+	"github.com/trezor/blockbook/bchain"
+	"github.com/trezor/blockbook/common"
+	"github.com/trezor/blockbook/db"
 )
 
 // SocketIoServer is handle to SocketIoServer
@@ -184,8 +184,8 @@ func (s *SocketIoServer) onMessage(c *gosocketio.Channel, req map[string]json.Ra
 		s.metrics.SocketIORequests.With(common.Labels{"method": method, "status": "success"}).Inc()
 		return rv
 	}
-	glog.Error(c.Id(), " onMessage ", method, ": ", errors.ErrorStack(err))
-	s.metrics.SocketIORequests.With(common.Labels{"method": method, "status": err.Error()}).Inc()
+	glog.Error(c.Id(), " onMessage ", method, ": ", errors.ErrorStack(err), ", data ", string(params))
+	s.metrics.SocketIORequests.With(common.Labels{"method": method, "status": "failure"}).Inc()
 	e := resultError{}
 	e.Error.Message = err.Error()
 	return e
@@ -670,7 +670,7 @@ func (s *SocketIoServer) onSubscribe(c *gosocketio.Channel, req []byte) interfac
 
 	onError := func(id, sc, err, detail string) {
 		glog.Error(id, " onSubscribe ", err, ": ", detail)
-		s.metrics.SocketIOSubscribes.With(common.Labels{"channel": sc, "status": err}).Inc()
+		s.metrics.SocketIOSubscribes.With(common.Labels{"channel": sc, "status": "failure"}).Inc()
 	}
 
 	r := string(req)

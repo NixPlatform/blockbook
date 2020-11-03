@@ -22,10 +22,10 @@
     "package_name": "backend-monacoin",
     "package_revision": "satoshilabs-1",
     "system_user": "monacoin",
-    "version": "0.16.3",
-    "binary_url": "https://github.com/monacoinproject/monacoin/releases/download/monacoin-0.16.3/monacoin-0.16.3-x86_64-linux-gnu.tar.gz",
+    "version": "0.17.1",
+    "binary_url": "https://github.com/monacoinproject/monacoin/releases/download/monacoin-0.17.1/monacoin-0.17.1-x86_64-linux-gnu.tar.gz",
     "verification_type": "gpg-sha256",
-    "verification_source": "https://github.com/monacoinproject/monacoin/releases/download/monacoin-0.16.3/monacoin-0.16.3-signatures.asc",
+    "verification_source": "https://github.com/monacoinproject/monacoin/releases/download/monacoin-0.17.1/monacoin-0.17.1-signatures.asc",
     "extract_command": "tar -C backend --strip 1 -xf",
     "exclude_files": [
       "bin/monacoin-qt"
@@ -37,7 +37,7 @@
     "service_additional_params_template": "",
     "protect_memory": true,
     "mainnet": true,
-    "server_config_file": "bitcoin_like.conf",
+    "server_config_file": "bitcoin.conf",
     "client_config_file": "bitcoin_like_client.conf",
     "additional_params": {
       "whitelist": "127.0.0.1"
@@ -59,7 +59,10 @@
       "xpub_magic_segwit_p2sh": 77429938,
       "xpub_magic_segwit_native": 78792518,
       "slip44": 22,
-      "additional_params": {}
+      "additional_params": {
+        "fiat_rates": "coingecko",
+        "fiat_rates_params": "{\"url\": \"https://api.coingecko.com/api/v3\", \"coin\": \"monacoin\", \"periodSeconds\": 60}"
+      }
     }
   },
   "meta": {

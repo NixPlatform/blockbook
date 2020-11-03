@@ -2,7 +2,6 @@
 package main
 
 import (
-	build "blockbook/build/tools"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,11 +12,13 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	build "github.com/trezor/blockbook/build/tools"
 )
 
 const (
 	configsDir          = "configs"
-	trezorCommonDefsURL = "https://raw.githubusercontent.com/trezor/trezor-common/master/defs/bitcoin/"
+	trezorCommonDefsURL = "https://raw.githubusercontent.com/trezor/trezor-firmware/master/common/defs/bitcoin/"
 )
 
 type trezorCommonDef struct {

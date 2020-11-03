@@ -1,11 +1,11 @@
 package db
 
 import (
-	"blockbook/bchain"
 	"time"
 
 	"github.com/golang/glog"
 	"github.com/tecbot/gorocksdb"
+	"github.com/trezor/blockbook/bchain"
 )
 
 // bulk connect
@@ -32,10 +32,10 @@ type BulkConnect struct {
 }
 
 const (
-	maxBulkAddresses          = 200000
+	maxBulkAddresses          = 80000
 	maxBulkTxAddresses        = 500000
 	partialStoreAddresses     = maxBulkTxAddresses / 10
-	maxBulkBalances           = 800000
+	maxBulkBalances           = 700000
 	partialStoreBalances      = maxBulkBalances / 10
 	maxBulkAddrContracts      = 1200000
 	partialStoreAddrContracts = maxBulkAddrContracts / 10
@@ -381,6 +381,12 @@ func (b *BulkConnect) Close() error {
 			return err
 		}
 	}
+	var err error
+	b.d.is.BlockTimes, err = b.d.loadBlockTimes()
+	if err != nil {
+		return err
+	}
+
 	if err := b.d.SetInconsistentState(false); err != nil {
 		return err
 	}

@@ -22,10 +22,10 @@
     "package_name": "backend-dogecoin",
     "package_revision": "satoshilabs-1",
     "system_user": "dogecoin",
-    "version": "1.14-beta-1",
-    "binary_url": "https://github.com/dogecoin/dogecoin/releases/download/v1.14-beta-1/dogecoin-1.14.2-x86_64-linux-gnu.tar.gz",
+    "version": "1.14.2",
+    "binary_url": "https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-x86_64-linux-gnu.tar.gz",
     "verification_type": "sha256",
-    "verification_source": "09871d8ff2ab5e0f05df2bdf5eba64c178229d030dd7c8473b08e6ed45d3327f",
+    "verification_source": "10c400c8f2039b1f804b8a533266201a9e4e3b32a8854501e8a43792e1ee78e6",
     "extract_command": "tar -C backend --strip 1 -xf",
     "exclude_files": [
       "bin/dogecoin-qt"
@@ -60,11 +60,14 @@
       "block_addresses_to_keep": 300,
       "xpub_magic": 49990397,
       "slip44": 3,
-      "additional_params": {}
+      "additional_params": {
+        "fiat_rates": "coingecko",
+        "fiat_rates_params": "{\"url\": \"https://api.coingecko.com/api/v3\", \"coin\": \"dogecoin\", \"periodSeconds\": 60}"
+      }
     }
   },
   "meta": {
-    "package_maintainer": "Jakub Matys",
-    "package_maintainer_email": "jakub.matys@satoshilabs.com"
+    "package_maintainer": "IT Admin",
+    "package_maintainer_email": "it@satoshilabs.com"
   }
 }

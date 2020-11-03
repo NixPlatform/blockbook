@@ -9,6 +9,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
+	"github.com/trezor/blockbook/common"
 )
 
 // BaseParser implements data parsing/handling functionality base for all other parsers
@@ -44,9 +45,9 @@ func (p *BaseParser) GetValueSatForUnknownInput(tx *Tx, input int) *big.Int {
 
 const zeros = "0000000000000000000000000000000000000000"
 
-// AmountToBigInt converts amount in json.Number (string) to big.Int
+// AmountToBigInt converts amount in common.JSONNumber (string) to big.Int
 // it uses string operations to avoid problems with rounding
-func (p *BaseParser) AmountToBigInt(n json.Number) (big.Int, error) {
+func (p *BaseParser) AmountToBigInt(n common.JSONNumber) (big.Int, error) {
 	var r big.Int
 	s := string(n)
 	i := strings.IndexByte(s, '.')
@@ -166,6 +167,11 @@ func (p *BaseParser) GetChainType() ChainType {
 	return ChainBitcoinType
 }
 
+// MinimumCoinbaseConfirmations returns minimum number of confirmations a coinbase transaction must have before it can be spent
+func (p *BaseParser) MinimumCoinbaseConfirmations() int {
+	return 0
+}
+
 // PackTx packs transaction to byte array using protobuf
 func (p *BaseParser) PackTx(tx *Tx, height uint32, blockTime int64) ([]byte, error) {
 	var err error
@@ -271,6 +277,12 @@ func (p *BaseParser) UnpackTx(buf []byte) (*Tx, uint32, error) {
 		Version:   pt.Version,
 	}
 	return &tx, pt.Height, nil
+}
+
+// IsAddrDescIndexable returns true if AddressDescriptor should be added to index
+// by default all AddressDescriptors are indexable
+func (p *BaseParser) IsAddrDescIndexable(addrDesc AddressDescriptor) bool {
+	return true
 }
 
 // DerivationBasePath is unsupported

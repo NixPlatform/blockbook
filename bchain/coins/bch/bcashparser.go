@@ -1,8 +1,6 @@
 package bch
 
 import (
-	"blockbook/bchain"
-	"blockbook/bchain/coins/btc"
 	"fmt"
 
 	"github.com/martinboehm/bchutil"
@@ -10,6 +8,8 @@ import (
 	"github.com/martinboehm/btcutil/chaincfg"
 	"github.com/martinboehm/btcutil/txscript"
 	"github.com/schancel/cashaddr-converter/address"
+	"github.com/trezor/blockbook/bchain"
+	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
 // AddressFormat type is used to specify different formats of address
@@ -151,7 +151,7 @@ func isCashAddr(addr string) bool {
 func (p *BCashParser) outputScriptToAddresses(script []byte) ([]string, bool, error) {
 	// convert possible P2PK script to P2PK, which bchutil can process
 	var err error
-	script, err = txscript.ConvertP2PKtoP2PKH(script)
+	script, err = txscript.ConvertP2PKtoP2PKH(p.Params.Base58CksumHasher, script)
 	if err != nil {
 		return nil, false, err
 	}
